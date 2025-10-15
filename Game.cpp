@@ -2,14 +2,11 @@
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
-
 #include <stdexcept>
 
 static std::pair<int, int> validateSize(int width, int height) {
-    if (width <= 0 || height <= 0)
-        throw std::invalid_argument("Размеры поля должны быть положительными");
-    if (width > 100 || height > 100)
-        throw std::invalid_argument("Размеры поля слишком большие");
+    if (width < 10 || height < 10 || width > 25 || height > 25)
+        throw std::invalid_argument("Board size must be between 10 and 25");
     return { width, height };
 }
 
@@ -20,21 +17,21 @@ Game::Game(int width, int height)
 
 void Game::init() {
     std::srand(static_cast<unsigned>(std::time(nullptr)));
-
-    player = std::make_shared<Player>(100, 20);
+    MAX_ENEMIES = (board.getHeight() * board.getWidth()) / 20;
+    player = std::make_shared<Player>(100, 20, 10);
     board.placeEntity(player, 1, 1);
 
-    for (int i = 0; i < 3; ++i) {
+    for (int i = 0; i < MAX_ENEMIES/2; ++i) {
         auto enemy = std::make_shared<Enemy>(40, 10);
         enemies.push_back(enemy);
-        int x = 5 + i;
-        int y = 5;
+        int x = rand() % board.getWidth();
+        int y = rand() % board.getHeight();
         board.placeEntity(enemy, x, y);
     }
 
-    auto spawner = std::make_shared<EnemySpawner>(100, 0, 3);
+    auto spawner = std::make_shared<EnemySpawner>(100, 4);
     spawners.push_back(spawner);
-    board.placeEntity(spawner, 8, 8);
+    board.placeEntity(spawner, rand()%board.getWidth(), rand() % board.getHeight());
 
     isRunning = true;
 }
@@ -85,7 +82,6 @@ void Game::processPlayerTurn() {
         std::cout << "Attack direction (w/a/s/d): ";
         char dir;
         std::cin >> dir;
-        int dx = 0, dy = 0;
         switch (dir) {
         case 'w': dy = -1; break;
         case 's': dy = 1; break;
@@ -185,12 +181,16 @@ void Game::processSpawners() {
     }
 }
 
+void Game::clearCmd() const {
+    #ifdef _WIN32
+        system("cls");
+    #else
+        system("clear");
+    #endif
+}
+
 void Game::render() const {
-#ifdef _WIN32
-    system("cls");
-#else
-    system("clear");
-#endif
+    clearCmd();
     printTitle();
     std::cout << "===== TURN " << turnCounter << " =====\n";
     for (int y = 0; y < board.getHeight(); ++y) {
@@ -250,9 +250,14 @@ bool Game::checkGameOver() const {
     }
 
     if (!anyEnemiesAlive) {
-        std::cout << "All enemies defeated! You win!\n";
+        printWin();
         return true;
     }
 
     return false;
+}
+
+void Game::printWin() const {
+    clearCmd();
+    std::cout << "All enemies defeated! You win!" << std::endl;
 }

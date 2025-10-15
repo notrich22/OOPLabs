@@ -14,3 +14,7 @@ void Enemy::takeTurn() {
     int dy = (std::rand() % 3) - 1;
     std::cout << "Enemy tries to move (" << dx << ", " << dy << ")\n";
 }
+
+std::shared_ptr<Entity> Enemy::clone() const {
+    return std::make_shared<Enemy>(*this);
+}

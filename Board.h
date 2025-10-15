@@ -1,39 +1,40 @@
 #pragma once
 #include <vector>
 #include <memory>
-#include "Cell.h"
-#include "MovableEntity.h"
 #include <functional>
 #include <string>
+
+#include "Cell.h"
+#include "MovableEntity.h"
 #include "Player.h"
 
+// Класс Board представляет игровое поле и управляет объектами на нём
 class Board {
 private:
-    int width;
-    int height;
-    std::vector<std::vector<Cell>> grid;
-public:
-    Board(int width, int height);
+    int width;   // ширина поля
+    int height;  // высота поля
+    std::vector<std::vector<Cell>> grid;  // сетка клеток
 
-    // Конструкторы копирования и перемещения (глубокие)
-    Board(const Board& other);
-    Board(Board&& other) noexcept;
+public:
+    // Конструкторы
+    Board(int width, int height);
+    Board(const Board& other);            // копирование (глубокое)
+    Board(Board&& other) noexcept;        // перемещение
     Board& operator=(const Board& other);
     Board& operator=(Board&& other) noexcept;
-
     ~Board() = default;
 
+    // Геттеры
     int getWidth() const { return width; }
     int getHeight() const { return height; }
-    std::pair<int, int> getPosition(const Entity& e) const;
 
-    void setPosition(Entity& e, std::pair<int, int> pos);
-
-    bool isInside(int x, int y) const;
-    Cell& getCell(int x, int y);
+    // Работа с клетками
+    bool isInside(int x, int y) const;    // проверка, внутри ли координаты
+    Cell& getCell(int x, int y);          // получить клетку
     const Cell& getCell(int x, int y) const;
-    bool rangedAttack(Player& player, int dx, int dy, int range);
 
-    bool moveEntity(MovableEntity& entity, int dx, int dy);
-    void placeEntity(std::shared_ptr<Entity> entity, int x, int y);
+    // Работа с объектами
+    void placeEntity(std::shared_ptr<Entity> entity, int x, int y);  // разместить сущность
+    bool moveEntity(MovableEntity& entity, int dx, int dy);          // переместить сущность
+    bool rangedAttack(Player& player, int dx, int dy, int range);    // дальняя атака игрока
 };

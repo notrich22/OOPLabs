@@ -31,6 +31,8 @@ Board::Board(const Board& other)
 
 Board::Board(Board&& other) noexcept
     : width(other.width), height(other.height), grid(std::move(other.grid)) {
+    other.width = 0;
+    other.height = 0;
 }
 
 Board& Board::operator=(const Board& other) {
@@ -47,6 +49,8 @@ Board& Board::operator=(Board&& other) noexcept {
         width = other.width;
         height = other.height;
         grid = std::move(other.grid);
+        other.width = 0;
+        other.height = 0;
     }
     return *this;
 }
@@ -100,8 +104,8 @@ bool Board::moveEntity(MovableEntity& entity, int dx, int dy) {
         if (auto player = std::dynamic_pointer_cast<Player>(attacker)) {
             if(player->getAttackMode() == AttackMode::Melee)
                 if (auto enemy = std::dynamic_pointer_cast<Enemy>(defender)) {
-                    enemy->takeDamage(player->getAttackPower());
-                    std::cout << "Player hits enemy for " << player->getAttackPower() << " damage!\n";
+                    enemy->takeDamage(player->getMeleeAttackPower());
+                    std::cout << "Player hits enemy for " << player->getMeleeAttackPower() << " damage!\n";
                     if (!enemy->isAlive()) {
                         std::cout << "Enemy defeated!\n";
                         target.clearEntity();
@@ -114,8 +118,8 @@ bool Board::moveEntity(MovableEntity& entity, int dx, int dy) {
         // враг атакует игрока
         if (auto enemy = std::dynamic_pointer_cast<Enemy>(attacker)) {
             if (auto player = std::dynamic_pointer_cast<Player>(defender)) {
-                player->takeDamage(enemy->getAttackPower());
-                std::cout << "Enemy hits player for " << enemy->getAttackPower() << " damage!\n";
+                player->takeDamage(enemy->getMeleeAttackPower());
+                std::cout << "Enemy hits player for " << enemy->getMeleeAttackPower() << " damage!\n";
                 if (!player->isAlive())
                     std::cout << "Player died!\n";
                 return true;
@@ -125,9 +129,9 @@ bool Board::moveEntity(MovableEntity& entity, int dx, int dy) {
         // Игрок атакует спавнер
         if (auto player = std::dynamic_pointer_cast<Player>(attacker)) {
             if (auto spawner = std::dynamic_pointer_cast<EnemySpawner>(defender)) {
-                spawner->takeDamage(player->getAttackPower());
+                spawner->takeDamage(player->getMeleeAttackPower());
                 std::cout << "Player hits spawner for "
-                    << player->getAttackPower() << " damage!\n";
+                    << player->getMeleeAttackPower() << " damage!\n";
                 if (!spawner->isAlive()) {
                     std::cout << "Spawner destroyed!\n";
                     target.clearEntity();
@@ -180,9 +184,9 @@ bool Board::rangedAttack(Player& player, int dx, int dy, int range) {
         if (target.isOccupied()) {
             auto targetEntity = target.getEntity();
             if (auto enemy = std::dynamic_pointer_cast<Enemy>(targetEntity)) {
-                enemy->takeDamage(player.getAttackPower());
+                enemy->takeDamage(player.getRangedAttackPower());
                 std::cout << "Ranged attack hits enemy for "
-                    << player.getAttackPower() << " damage!\n";
+                    << player.getRangedAttackPower() << " damage!\n";
                 if (!enemy->isAlive()) {
                     std::cout << "Enemy killed by ranged attack!\n";
                     target.clearEntity();
@@ -191,9 +195,9 @@ bool Board::rangedAttack(Player& player, int dx, int dy, int range) {
                 return true;
             }
             if (auto spawner = std::dynamic_pointer_cast<EnemySpawner>(targetEntity)) {
-                spawner->takeDamage(player.getAttackPower());
+                spawner->takeDamage(player.getRangedAttackPower());
                 std::cout << "Ranged attack hits spawner for "
-                    << player.getAttackPower() << " damage!\n";
+                    << player.getRangedAttackPower() << " damage!\n";
                 if (!spawner->isAlive()) {
                     std::cout << "Spawner destroyed by ranged attack!\n";
                     target.clearEntity();

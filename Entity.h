@@ -1,15 +1,20 @@
 #pragma once
 #include <utility>
+#include <memory>
 
+// Базовый класс Entity - сущность с общими характеристиками
 class Entity {
 protected:
-    int health;
-    int attackPower;
+    int health;             // здоровье
+    int meleeAttackPower;   // сила ближней атаки
+    int rangedAttackPower;  // сила дальней атаки
 
 public:
-    Entity(int health, int attackPower)
+    // Конструктор с проверкой значений
+    Entity(int health, int meleeAttackPower, int rangedAttackPower)
         : health(health > 0 ? health : 0),
-        attackPower(attackPower > 0 ? attackPower : 0) {
+        meleeAttackPower(meleeAttackPower > 0 ? meleeAttackPower : 0),
+        rangedAttackPower(rangedAttackPower > 0 ? rangedAttackPower : 0) {
     }
 
     Entity(const Entity&) = default;
@@ -18,14 +23,23 @@ public:
     Entity& operator=(Entity&&) noexcept = default;
     virtual ~Entity() = default;
 
+    // Клонирование объекта (для глубоких копий)
+    virtual std::shared_ptr<Entity> clone() const = 0;
+
+	// Абстрактные методы поведения сущности
     virtual void takeTurn() = 0;
     virtual void takeDamage(int dmg) = 0;
 
+    // Геттеры
     int getHealth() const { return health; }
-    int getAttackPower() const { return attackPower; }
+    int getMeleeAttackPower() const { return meleeAttackPower; }
+    int getRangedAttackPower() const { return rangedAttackPower; }
 
+    // Сеттеры
     void setHealth(int h) { health = (h > 0 ? h : 0); }
-    void setAttackPower(int power) { attackPower = (power > 0 ? power : 0); }
+    void setMeleeAttackPower(int power) { meleeAttackPower = (power > 0 ? power : 0); }
+    void setRangedAttackPower(int power) { rangedAttackPower = (power > 0 ? power : 0); }
 
+    // Проверка состояния
     bool isAlive() const { return health > 0; }
 };

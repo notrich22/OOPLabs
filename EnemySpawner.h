@@ -3,21 +3,28 @@
 #include "Enemy.h"
 #include <memory>
 
+// Класс EnemySpawner создаёт врагов через определённые интервалы времени
 class EnemySpawner : public StaticEntity {
 private:
-    int spawnCooldown;
-    int currentCounter;
+    int spawnCooldown;    // период между спавнами
+    int currentCounter;   // счётчик до следующего спавна
 
 public:
-    EnemySpawner(int health, int attackPower, int cooldown)
-        : StaticEntity(health, attackPower),
+    // Конструктор с параметрами здоровья и времени перезарядки
+    EnemySpawner(int health, int cooldown, int meleeAttackPower = 0, int rangedAttackPower = 0)
+        : StaticEntity(health, meleeAttackPower, rangedAttackPower),
         spawnCooldown(cooldown),
         currentCounter(cooldown) {
     }
 
-    void takeTurn() override;
-    void takeDamage(int dmg) override;
+    EnemySpawner(const EnemySpawner&) noexcept = default;
 
+    // Поведение спавнера
+    void takeTurn() override;            // ход спавнера (уменьшение счётчика, создание врага)
+    void takeDamage(int dmg) override;   // получение урона
+    std::shared_ptr<Entity> clone() const override; // копирование объекта
+
+    // Проверка готовности и сброс таймера
     bool readyToSpawn() const { return currentCounter <= 0; }
     void resetCounter() { currentCounter = spawnCooldown; }
 };
