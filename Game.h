@@ -37,6 +37,12 @@ public:
     // Работа спавнеров (создание новых врагов)
     void processSpawners();
 
+	//Логика перемещения сущности
+    bool moveEntity(MovableEntity& entity, int dx, int dy);
+	
+    //Логика боя между двумя сущностями
+    bool handleCombat(std::shared_ptr<Entity> attacker, std::shared_ptr<Entity> defender);
+
     // Очистка консоли
     void clearCmd() const;
 

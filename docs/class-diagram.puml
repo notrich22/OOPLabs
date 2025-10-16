@@ -127,12 +127,11 @@ class "Game" {
 ' ================== RELATIONSHIPS ==================
 "Board" *-- "Cell" : grid
 "Cell" o-- "Entity" : entity
+"Board" o-- "Entity"
 "Game" *-- "Board"
-"Game" o-- "Player"
-"Game" o-- "Enemy"
-"Game" o-- "EnemySpawner"
+"Game" *-- "Player"
+"Game" *-- "Enemy"
+"Game" *-- "EnemySpawner"
 "EnemySpawner" ..> "Enemy" : creates
-"Board" ..> "Player" : rangedAttack()
-"Board" ..> "MovableEntity" : moveEntity()
 
 @enduml

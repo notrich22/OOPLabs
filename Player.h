@@ -1,8 +1,6 @@
 #pragma once
 #include "MovableEntity.h"
 
-// –ежим атаки игрока
-enum class AttackMode { Melee, Ranged };
 
 //  ласс Player представл€ет управл€емого игроком персонажа
 class Player : public MovableEntity {
@@ -12,7 +10,7 @@ private:
 
 public:
     //  онструктор с начальными параметрами здоровь€ и урона
-    Player(int health, int meleeAttackPower, int rangedAttackPower = 0)
+    Player(int health = 100, int meleeAttackPower = 20, int rangedAttackPower = 10)
         : MovableEntity(health, meleeAttackPower, rangedAttackPower),
         experience(0),
         mode(AttackMode::Melee) {

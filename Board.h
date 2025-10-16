@@ -32,9 +32,9 @@ public:
     bool isInside(int x, int y) const;    // проверка, внутри ли координаты
     Cell& getCell(int x, int y);          // получить клетку
     const Cell& getCell(int x, int y) const;
+    std::pair<int, int> getRandomFreeCell() const;
 
     // Работа с объектами
     void placeEntity(std::shared_ptr<Entity> entity, int x, int y);  // разместить сущность
-    bool moveEntity(MovableEntity& entity, int dx, int dy);          // переместить сущность
     bool rangedAttack(Player& player, int dx, int dy, int range);    // дальняя атака игрока
 };

@@ -12,3 +12,4 @@ int main() {
         return 1;
     }
 }
+//TODO: Перенести логику хода в Game, сделать удаление игроков, исправить direction на enums

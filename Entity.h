@@ -2,13 +2,17 @@
 #include <utility>
 #include <memory>
 
+// Режим атаки
+enum class AttackMode { Melee, Ranged };
+
 // Базовый класс Entity - сущность с общими характеристиками
 class Entity {
 protected:
     int health;             // здоровье
     int meleeAttackPower;   // сила ближней атаки
     int rangedAttackPower;  // сила дальней атаки
-
+	AttackMode attackMode = AttackMode::Melee; // текущий режим атаки
+	std::pair<int, int> position; // позиция на игровом поле (x, y)
 public:
     // Конструктор с проверкой значений
     Entity(int health, int meleeAttackPower, int rangedAttackPower)
@@ -34,11 +38,17 @@ public:
     int getHealth() const { return health; }
     int getMeleeAttackPower() const { return meleeAttackPower; }
     int getRangedAttackPower() const { return rangedAttackPower; }
+    std::pair<int, int> getPosition() const noexcept {return position;}
+    int getX() const noexcept { return position.first; }
+    int getY() const noexcept { return position.second; }
+	AttackMode getAttackMode() const { return attackMode; }
 
     // Сеттеры
     void setHealth(int h) { health = (h > 0 ? h : 0); }
     void setMeleeAttackPower(int power) { meleeAttackPower = (power > 0 ? power : 0); }
     void setRangedAttackPower(int power) { rangedAttackPower = (power > 0 ? power : 0); }
+	void setPosition(int x, int y) { position = { x, y }; }
+	void setAttackMode(AttackMode mode) { attackMode = mode; }
 
     // Проверка состояния
     bool isAlive() const { return health > 0; }
