@@ -1,13 +1,16 @@
 #pragma once
 #include "Entity.h"
 
+// Класс StaticEntity описывает статическую сущность, имеющую здоровье и урон, но не способную перемещаться
 class StaticEntity : public Entity {
 public:
-    StaticEntity(int health, int attackPower)
-        : Entity(health, attackPower) {
+    // Конструктор инициализирует базовые параметры сущности
+    StaticEntity(int health)
+        : Entity(health) {
     }
 
     virtual ~StaticEntity() = default;
 
+    // Абстрактный метод: статическая сущность должна реализовать собственное поведение
     void takeTurn() override = 0;
 };

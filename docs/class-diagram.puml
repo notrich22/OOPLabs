@@ -1,0 +1,137 @@
+@startuml UML
+title Class Diagram
+
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+
+' ================== ENUMS ==================
+enum AttackMode <<enumeration>>{
+    Melee
+    Ranged
+}
+
+enum CellType <<enumeration>>{
+    Normal
+    Wall
+    Slow
+}
+
+' ================== ABSTRACT CLASSES ==================
+abstract class "Entity" <<abstract>> {
+    - health: int
+    - meleeAttackPower: int
+    - rangedAttackPower: int
+    + clone(): Entity
+    + takeTurn(): void
+    + takeDamage(dmg: int): void
+    + getHealth(): int
+    + getMeleeAttackPower(): int
+    + getRangedAttackPower(): int
+    + setHealth(h: int): void
+    + setMeleeAttackPower(power: int): void
+    + setRangedAttackPower(power: int): void
+    + isAlive(): bool
+}
+
+abstract class "MovableEntity" <<abstract>> {
+    - skipNextMove: bool
+    + clone(): Entity
+    + shouldSkipMove(): bool
+    + setSkipNextMove(v: bool): void
+}
+
+abstract class "StaticEntity" <<abstract>> {
+    + takeTurn(): void
+}
+
+"Entity" <|-- "MovableEntity"
+"Entity" <|-- "StaticEntity"
+
+' ================== DERIVED CLASSES ==================
+class "Player" {
+    - experience: uint
+    - mode: AttackMode
+    + takeTurn(): void
+    + takeDamage(dmg: int): void
+    + addExperience(exp: uint): void
+    + getExperience(): uint
+    + switchMode(): void
+    + getAttackMode(): AttackMode
+    + getAttackRange(): int
+    + clone(): Entity
+}
+
+class "Enemy" {
+    + takeTurn(): void
+    + takeDamage(dmg: int): void
+    + clone(): Entity
+}
+
+class "EnemySpawner" {
+    - spawnCooldown: int
+    - currentCounter: int
+    + takeTurn(): void
+    + takeDamage(dmg: int): void
+    + clone(): Entity
+    + readyToSpawn(): bool
+    + resetCounter(): void
+}
+
+"MovableEntity" <|-- "Player"
+"MovableEntity" <|-- "Enemy"
+"StaticEntity" <|-- "EnemySpawner"
+
+' ================== FIELD CLASSES ==================
+class "Cell" {
+    - type: CellType
+    - entity: Entity [0..1]
+    + getType(): CellType
+    + setType(newType: CellType): void
+    + isOccupied(): bool
+    + getEntity(): Entity
+    + setEntity(e: Entity): void
+    + clearEntity(): void
+}
+
+class "Board" {
+    - width: int
+    - height: int
+    - grid: Cell[*][*]
+    + isInside(x: int, y: int): bool
+    + getCell(x: int, y: int): Cell
+    + rangedAttack(p: Player, dx: int, dy: int, range: int): bool
+    + moveEntity(e: MovableEntity, dx: int, dy: int): bool
+    + placeEntity(e: Entity, x: int, y: int): void
+}
+
+class "Game" {
+    - board: Board
+    - player: Player [1]
+    - enemies: Enemy[*]
+    - spawners: EnemySpawner[*]
+    - turnCounter: int
+    - isRunning: bool
+    - MAX_ENEMIES: int
+    + init(): void
+    + run(): void
+    + processPlayerTurn(): void
+    + processEnemies(): void
+    + processSpawners(): void
+    + clearCmd(): void
+    + printTitle(): void
+    + checkGameOver(): bool
+    + printWin(): void
+    + render(): void
+}
+
+' ================== RELATIONSHIPS ==================
+"Board" *-- "Cell" : grid
+"Cell" o-- "Entity" : entity
+"Board" o-- "Entity"
+"Game" *-- "Board"
+"Game" *-- "Player"
+"Game" *-- "Enemy"
+"Game" *-- "EnemySpawner"
+"EnemySpawner" ..> "Enemy" : creates
+
+@enduml

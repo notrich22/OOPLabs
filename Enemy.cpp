@@ -3,8 +3,8 @@
 #include <cstdlib>
 
 void Enemy::takeDamage(int dmg) {
-    health -= dmg;
-    if (health < 0) health = 0;
+    Entity::takeDamage(dmg);
+    std::cout << "Enemy takes " << dmg << " damage! HP: " << getHealth() << "\n";
 }
 
 void Enemy::takeTurn() {

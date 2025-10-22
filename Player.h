@@ -1,32 +1,30 @@
 #pragma once
 #include "MovableEntity.h"
+#include <iostream>
+#include "Direction.h"
 
-enum class AttackMode { Melee, Ranged };
+class Board;                 // <-- форвард-декларация, чтобы видеть тип
 
 class Player : public MovableEntity {
 private:
-    unsigned int experience;
-    AttackMode mode;
+    unsigned int experience = 0;
+	unsigned int attackRange = 2;
 public:
-    Player(int health, int attackPower)
-        : MovableEntity(health, attackPower),
-        experience(0),
-        mode(AttackMode::Melee) {
+    Player(int health = 100, int melee = 20, int ranged = 10)
+        : MovableEntity(health, melee, ranged) {
     }
 
-    void takeTurn() override;
+    void takeTurn();
+
     void takeDamage(int dmg) override;
+    void addExperience(unsigned int exp);
+    char symbol() const noexcept override { return 'P'; }
 
-    void addExperience(unsigned int exp) { experience += exp; }
     unsigned int getExperience() const { return experience; }
-
-    void switchMode() {
-        mode = (mode == AttackMode::Melee) ? AttackMode::Ranged : AttackMode::Melee;
+	unsigned int getAttackRange() const { return attackRange; }
+    void switchMode();
+    std::shared_ptr<Entity> clone() const override {
+        return std::make_shared<Player>(*this);
     }
-    AttackMode getAttackMode() const { return mode; }
-    int getAttackRange() const {
-        return (mode == AttackMode::Melee) ? 1 : 3;
-    }
-
 
 };

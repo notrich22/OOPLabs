@@ -4,23 +4,24 @@
 #include "Enemy.h"
 #include "EnemySpawner.h"
 #include <cstdlib>
+#include <queue>
+#include <set>
 
-Board::Board(int width, int height)
+Board::Board(int width, int height, std::mt19937& rng)
     : width(width), height(height), grid(height, std::vector<Cell>(width))
 {
-    std::srand(static_cast<unsigned>(std::time(nullptr)));
+    std::uniform_int_distribution<int> dist(0, 99);
 
     for (int y = 0; y < height; ++y) {
         for (int x = 0; x < width; ++x) {
-
-            int r = std::rand() % 100;
+            int r = dist(rng);
 
             if (r < 10)
-                grid[y][x].setType(CellType::Wall);      // 10 % стен
+                grid[y][x].setType(CellType::Wall);      // 10%
             else if (r < 15)
-                grid[y][x].setType(CellType::Slow);      // 5 % замедляющих
+                grid[y][x].setType(CellType::Slow);      // 5%
             else
-                grid[y][x].setType(CellType::Normal);    // остальное — обычные
+                grid[y][x].setType(CellType::Normal);    // остальное
         }
     }
 }
@@ -31,6 +32,8 @@ Board::Board(const Board& other)
 
 Board::Board(Board&& other) noexcept
     : width(other.width), height(other.height), grid(std::move(other.grid)) {
+    other.width = 0;
+    other.height = 0;
 }
 
 Board& Board::operator=(const Board& other) {
@@ -47,6 +50,8 @@ Board& Board::operator=(Board&& other) noexcept {
         width = other.width;
         height = other.height;
         grid = std::move(other.grid);
+        other.width = 0;
+        other.height = 0;
     }
     return *this;
 }
@@ -64,145 +69,53 @@ const Cell& Board::getCell(int x, int y) const {
 }
 
 void Board::placeEntity(std::shared_ptr<Entity> entity, int x, int y) {
-    if (!isInside(x, y)) return;
-    grid[y][x].setEntity(std::move(entity));
+    if (!isInside(x, y))
+        throw std::out_of_range("Invalid position for entity");
+
+    Cell& cell = getCell(x, y);
+
+    if (cell.isOccupied())
+        throw std::logic_error("Cell is already occupied");
+
+    cell.setEntity(entity);
+    entity->setPosition(x, y);
 }
 
-bool Board::moveEntity(MovableEntity& entity, int dx, int dy) {
-    std::pair<int, int> pos{ -1, -1 };
+bool Board::hasFreeNeighbor(const std::pair<int, int>& pos) const {
+    if (!isInside(pos.first, pos.second) || grid[pos.second][pos.first].isOccupied())
+        return false;
 
-    // найти координаты сущности
-    for (int y = 0; y < height; ++y) {
-        for (int x = 0; x < width; ++x) {
-            auto cellEntity = grid[y][x].getEntity();
-            if (cellEntity && cellEntity.get() == &entity) {
-                pos = { x, y };
-                break;
-            }
-        }
-        if (pos.first != -1) break;
-    }
+    const std::vector<std::pair<int, int>> dirs = { {1,0},{-1,0},{0,1},{0,-1} };
+    std::queue<std::pair<int, int>> q;
+    std::set<std::pair<int, int>> visited;
 
-    if (pos.first == -1) return false; // не найдено
-    int newX = pos.first + dx;
-    int newY = pos.second + dy;
-    if (!isInside(newX, newY)) return false;
+    q.push(pos);
+    visited.insert(pos);
 
-    Cell& current = getCell(pos.first, pos.second);
-    Cell& target = getCell(newX, newY);
+    int steps = 0;
+    while (!q.empty() && steps < 8) {
+        auto [x, y] = q.front();
+        q.pop();
+        ++steps;
 
-    // если в клетке есть враг/игрок → бой
-    if (target.isOccupied()) {
-        auto attacker = current.getEntity();
-        auto defender = target.getEntity();
-
-        // игрок атакует врага
-        if (auto player = std::dynamic_pointer_cast<Player>(attacker)) {
-            if(player->getAttackMode() == AttackMode::Melee)
-                if (auto enemy = std::dynamic_pointer_cast<Enemy>(defender)) {
-                    enemy->takeDamage(player->getAttackPower());
-                    std::cout << "Player hits enemy for " << player->getAttackPower() << " damage!\n";
-                    if (!enemy->isAlive()) {
-                        std::cout << "Enemy defeated!\n";
-                        target.clearEntity();
-                        player->addExperience(10);
-                    }
-                    return true;
-                }
-        }
-
-        // враг атакует игрока
-        if (auto enemy = std::dynamic_pointer_cast<Enemy>(attacker)) {
-            if (auto player = std::dynamic_pointer_cast<Player>(defender)) {
-                player->takeDamage(enemy->getAttackPower());
-                std::cout << "Enemy hits player for " << enemy->getAttackPower() << " damage!\n";
-                if (!player->isAlive())
-                    std::cout << "Player died!\n";
-                return true;
-            }
-        }
-
-        // Игрок атакует спавнер
-        if (auto player = std::dynamic_pointer_cast<Player>(attacker)) {
-            if (auto spawner = std::dynamic_pointer_cast<EnemySpawner>(defender)) {
-                spawner->takeDamage(player->getAttackPower());
-                std::cout << "Player hits spawner for "
-                    << player->getAttackPower() << " damage!\n";
-                if (!spawner->isAlive()) {
-                    std::cout << "Spawner destroyed!\n";
-                    target.clearEntity();
-                }
-                return true;
-            }
-        }
-
-        return false; // остальные комбинации не взаимодействуют
-    }
-
-    // перемещение
-    if (target.getType() == CellType::Wall) return false;
-
-    target.setEntity(current.getEntity());
-    current.clearEntity();
-
-    // эффект замедляющей клетки
-    if (target.getType() == CellType::Slow) {
-        entity.setSkipNextMove(true);
-    }
-
-    return true;
-}
-
-bool Board::rangedAttack(Player& player, int dx, int dy, int range) {
-	if (player.getAttackMode() != AttackMode::Ranged) return false;
-    // находим позицию игрока
-    std::pair<int, int> pos{ -1, -1 };
-    for (int y = 0; y < this->getHeight(); ++y) {
-        for (int x = 0; x < this->getWidth(); ++x) {
-            if (grid[y][x].getEntity().get() == &player) {
-                pos = { x, y };
-                break;
-            }
-        }
-        if (pos.first != -1) break;
-    }
-    if (pos.first == -1) return false;
-
-    // проверяем клетки по направлению dx/dy
-    for (int step = 1; step <= range; ++step) {
-        int nx = pos.first + dx * step;
-        int ny = pos.second + dy * step;
-        if (!isInside(nx, ny)) break;
-
-        Cell& target = getCell(nx, ny);
-        if (target.getType() == CellType::Wall) break; // снаряд врезался в стену
-
-        if (target.isOccupied()) {
-            auto targetEntity = target.getEntity();
-            if (auto enemy = std::dynamic_pointer_cast<Enemy>(targetEntity)) {
-                enemy->takeDamage(player.getAttackPower());
-                std::cout << "Ranged attack hits enemy for "
-                    << player.getAttackPower() << " damage!\n";
-                if (!enemy->isAlive()) {
-                    std::cout << "Enemy killed by ranged attack!\n";
-                    target.clearEntity();
-                    player.addExperience(10);
-                }
-                return true;
-            }
-            if (auto spawner = std::dynamic_pointer_cast<EnemySpawner>(targetEntity)) {
-                spawner->takeDamage(player.getAttackPower());
-                std::cout << "Ranged attack hits spawner for "
-                    << player.getAttackPower() << " damage!\n";
-                if (!spawner->isAlive()) {
-                    std::cout << "Spawner destroyed by ranged attack!\n";
-                    target.clearEntity();
-                }
-                return true;
-            }
+        for (auto [dx, dy] : dirs) {
+            int nx = x + dx, ny = y + dy;
+            if (!isInside(nx, ny) || visited.count({ nx, ny })) continue;
+            if (!grid[nx][ny].isOccupied()) return true;
+            visited.insert({ nx, ny });
         }
     }
-
-    std::cout << "Ranged attack missed.\n";
     return false;
+}
+
+std::pair<int, int> Board::getRandomFreeCell(std::mt19937& rng) const {
+    std::uniform_int_distribution<int> distX(0, width - 1);
+    std::uniform_int_distribution<int> distY(0, height - 1);
+
+    while (true) {
+        int x = distX(rng);
+        int y = distY(rng);
+        if (!grid[y][x].isOccupied() && grid[y][x].getType() != CellType::Wall)
+            return { x, y };
+    }
 }

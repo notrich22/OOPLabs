@@ -2,12 +2,16 @@
 #include <iostream>
 
 void EnemySpawner::takeDamage(int dmg) {
-    health -= dmg;
-    if (health < 0) health = 0;
+	Entity::takeDamage(dmg);
+    std::cout << "EnemySpawner took " << dmg << " damage! HP left: " << getHealth() << "\n";
 }
 
 
 void EnemySpawner::takeTurn() {
     if (currentCounter > 0)
         --currentCounter;
+}
+
+std::shared_ptr<Entity> EnemySpawner::clone() const {
+    return std::make_shared<EnemySpawner>(*this);
 }

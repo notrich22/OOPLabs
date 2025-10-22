@@ -1,31 +1,35 @@
 #pragma once
 #include <utility>
+#include <memory>
+#include <algorithm>
 
+// Базовый класс сущности на поле
 class Entity {
 protected:
-    int health;
-    int attackPower;
-
+    int health;                    // здоровье
+    std::pair<int, int> position;  // координаты сущности на поле
 public:
-    Entity(int health, int attackPower)
-        : health(health > 0 ? health : 0),
-        attackPower(attackPower > 0 ? attackPower : 0) {
-    }
+    Entity(int health)
+        : health(std::max(0, health)) {}
 
-    Entity(const Entity&) = default;
-    Entity(Entity&&) noexcept = default;
-    Entity& operator=(const Entity&) = default;
-    Entity& operator=(Entity&&) noexcept = default;
     virtual ~Entity() = default;
 
-    virtual void takeTurn() = 0;
-    virtual void takeDamage(int dmg) = 0;
+    // Поведение, общее для всех
+    virtual void takeTurn() = 0;         // ход сущности (игровая логика)
+    virtual void takeDamage(int dmg) {   // получение урона
+        health = std::max(0, health - dmg);
+    }
 
+    virtual std::shared_ptr<Entity> clone() const = 0;
+
+    // Доступ к данным
     int getHealth() const { return health; }
-    int getAttackPower() const { return attackPower; }
-
-    void setHealth(int h) { health = (h > 0 ? h : 0); }
-    void setAttackPower(int power) { attackPower = (power > 0 ? power : 0); }
-
     bool isAlive() const { return health > 0; }
+    virtual char symbol() const noexcept = 0;
+
+    std::pair<int,int> getPosition() const noexcept { return position; }
+    int getX() const noexcept { return position.first; }
+    int getY() const noexcept { return position.second; }
+
+    void setPosition(int x, int y) noexcept { position = {x, y}; }
 };
