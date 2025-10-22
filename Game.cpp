@@ -5,6 +5,7 @@
 #include <stdexcept>
 #include <algorithm>
 #include <random>
+#include "Direction.h"
 
 static std::pair<int, int> validateSize(int width, int height) {
     if (width < 10 || height < 10 || width > 25 || height > 25)
@@ -12,39 +13,37 @@ static std::pair<int, int> validateSize(int width, int height) {
     return { width, height };
 }
 
-Game::Game(int width, int height)
-    : board(validateSize(width, height).first, validateSize(width, height).second)
-{
-}
+Game::Game(int w, int h, unsigned seed)
+    : seed(seed),
+    rng(seed),
+    board(Board(validateSize(w, h).first, validateSize(w, h).second, rng)){}
 
 void Game::init() {
-    std::srand(static_cast<unsigned>(std::time(nullptr)));
     MAX_ENEMIES = (board.getHeight() * board.getWidth()) / 20;
+
     player = std::make_shared<Player>();
-    auto freePos = board.getRandomFreeCell();
-    int x = freePos.first;
-    int y = freePos.second;
-    board.placeEntity(player, x, y);
+    spawnEntity(player);
 
-
-    for (int i = 0; i < MAX_ENEMIES/2; ++i) {
+    for (int i = 0; i < MAX_ENEMIES / 2; ++i) {
         auto enemy = std::make_shared<Enemy>(40, 10);
         enemies.push_back(enemy);
-        freePos = board.getRandomFreeCell();
-        x = freePos.first;
-        y = freePos.second;
-        board.placeEntity(enemy, x, y);
+        spawnEntity(enemy);
     }
-
 
     auto spawner = std::make_shared<EnemySpawner>(100, 4);
     spawners.push_back(spawner);
-    freePos = board.getRandomFreeCell();
-    x = freePos.first;
-    y = freePos.second;    
-    board.placeEntity(spawner, x, y);
+    spawnEntity(spawner);
 
     isRunning = true;
+    turnCounter = 1;
+}
+
+void Game::spawnEntity(const std::shared_ptr<Entity>& entity) {
+    std::pair<int, int> pos;
+    do {
+        pos = board.getRandomFreeCell(rng);
+    } while (!board.hasFreeNeighbor(pos));
+    board.placeEntity(entity, pos.first, pos.second);
 }
 
 void Game::run() {
@@ -55,99 +54,127 @@ void Game::run() {
         processEnemies();
         processSpawners();
 
-        std::cout << "\nPress Enter to continue...";
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        std::cin.get();
+        //std::cout << "\nPress Enter to continue...";
+		system("pause");
 
         turnCounter++;
     }
     std::cout << "Game over.\n";
 }
 
+std::shared_ptr<Entity> Game::findTargetInDirection(const std::shared_ptr<Entity>& source, Direction dir, int range) const
+{
+    auto [x, y] = source->getPosition();
+    auto [dx, dy] = delta(dir);
+
+    for (int step = 1; step <= range; ++step) {
+        int nx = x + dx * step;
+        int ny = y + dy * step;
+        if (!board.isInside(nx, ny)) break;
+
+        const Cell& cell = board.getCell(nx, ny);
+        if (cell.getType() == CellType::Wall) break;
+        if (cell.isOccupied()) return cell.getEntity();
+    }
+
+    return nullptr;
+}
+
 void Game::processPlayerTurn() {
     std::cout << "Player HP: " << player->getHealth() << "\n";
-    player->getAttackMode() == AttackMode::Melee?std::cout << "Enter command (w/a/s/d to move, m to switch weapon, q to quit): ": std::cout << "Enter command (w/a/s/d to move, m to switch weapon, f to shoot, q to quit): ";
-    
+
+    if (player->getAttackMode() == AttackMode::Melee)
+        std::cout << "Enter command (w/a/s/d to move, m to switch weapon, q to quit): ";
+    else
+        std::cout << "Enter command (w/a/s/d to move, m to switch weapon, f to shoot, q to quit): ";
+
+    // Пропуск хода после замедления/события
     if (player->shouldSkipMove()) {
-		player->setSkipNextMove(false);
-		std::cout << "You skip this turn!\n";
-		return;
+        player->setSkipNextMove(false);
+        std::cout << "You skip this turn!\n";
+        return;
     }
+
     char cmd;
     std::cin >> cmd;
-    int attack_range = player->getAttackRange();
 
-    int dx = 0, dy = 0;
-    switch (cmd) {
-    case 'w': dy = -1; break;
-    case 's': dy = 1;  break;
-    case 'a': dx = -1; break;
-    case 'd': dx = 1;  break;
-    case 'f': {
-        if (player->getAttackMode() == AttackMode::Melee)break;
+
+    // ----- Смена оружия -----
+    if (cmd == 'm') {
+        player->switchMode();
+        std::cout << "Attack mode switched to "
+            << (player->getAttackMode() == AttackMode::Melee ? "MELEE\n" : "RANGED\n");
+        player->setSkipNextMove(true);
+        return;
+    }
+
+    // ----- Выход -----
+    if (cmd == 'q') {
+        isRunning = false;
+        return;
+    }
+
+    // ----- Дальняя атака -----
+    if (cmd == 'f') {
+        if (player->getAttackMode() == AttackMode::Melee) {
+            std::cout << "You can't shoot in melee mode!\n";
+            return;
+        }
+
         std::cout << "Attack direction (w/a/s/d): ";
-        char dir;
-        std::cin >> dir;
-        switch (dir) {
-        case 'w': dy = -1; break;
-        case 's': dy = 1; break;
-        case 'a': dx = -1; break;
-        case 'd': dx = 1; break;
-        default:
+        char dirKey;
+        std::cin >> dirKey;
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+        auto dirOpt = keyToDir(dirKey);
+        if (!dirOpt) {
             std::cout << "Invalid direction\n";
             return;
         }
 
-        // вызываем новую функцию для поиска цели
-        board.rangedAttack(*player, dx, dy, attack_range);
-        return;
-    }
-    case 'm':
-        player->switchMode();
-        std::cout << "Attack mode switched to "
-            << (player->getAttackMode() == AttackMode::Melee ? "MELEE\n" : "RANGED\n");
-        player->setSkipNextMove(true); // пропускаем ход после смены режима
-        return;
-    case 'q':
-        isRunning = false;
-        return;
-    default:
-        std::cout << "Unknown command\n";
+        auto target = findTargetInDirection(player, *dirOpt, player->getAttackRange());
+
+        if (target) {
+            handleCombat(player, target);
+        }
+        else {
+			std::cout << "You missed!\n";
+        }
         return;
     }
 
-    moveEntity(*player, dx, dy);
+    // ----- Движение -----
+    if (auto dirOpt = keyToDir(cmd)) {
+        auto [dx, dy] = delta(*dirOpt);
+        moveEntity(*player, dx, dy);
+    }
+    else {
+        std::cout << "Unknown command\n";
+    }
 }
 
 void Game::processEnemies() {
+    auto& dirs = cardinalDirs;
+
     for (auto& enemy : enemies) {
         if (!enemy->isAlive()) continue;
+
         if (enemy->shouldSkipMove()) {
             enemy->setSkipNextMove(false);
             std::cout << "Enemy skips this turn!\n";
             continue;
         }
 
-        const int dirs[4][2] = {
-            {0, -1},  // вверх
-            {0, 1},   // вниз
-            {-1, 0},  // влево
-            {1, 0}    // вправо
-        };
+        std::array<Direction, 4> shuffled = cardinalDirs;
+        std::shuffle(shuffled.begin(), shuffled.end(), rng);
 
-        std::vector<int> indices = { 0, 1, 2, 3 };
-        std::shuffle(indices.begin(), indices.end(), std::mt19937(std::random_device{}()));
-
-        for (int i : indices) {
-            int dx = dirs[i][0];
-            int dy = dirs[i][1];
+        for (Direction dir : shuffled) {
+            auto [dx, dy] = delta(dir);
             if (moveEntity(*enemy, dx, dy)) {
                 break;
             }
         }
     }
-
-    // Удаляем всех мёртвых врагов из списка
     enemies.erase(
         std::remove_if(enemies.begin(), enemies.end(),
             [](const std::shared_ptr<Enemy>& e) { return !e->isAlive(); }),
@@ -162,44 +189,36 @@ void Game::processSpawners() {
 
         spawner->takeTurn();
 
-        // Проверяем лимит по текущему количеству врагов
-        if (static_cast<int>(enemies.size()) >= MAX_ENEMIES) {
+        if (static_cast<int>(enemies.size()) >= MAX_ENEMIES)
             continue;
-        }
 
-        if (spawner->readyToSpawn()) {
-            int sx = -1, sy = -1;
-            for (int y = 0; y < board.getHeight(); ++y) {
-                for (int x = 0; x < board.getWidth(); ++x) {
-                    if (board.getCell(x, y).getEntity().get() == spawner.get()) {
-                        sx = x; sy = y;
-                        break;
-                    }
-                }
-                if (sx != -1) break;
-            }
+        if (!spawner->readyToSpawn())
+            continue;
 
-            const int dirs[8][2] = {
-                {-1, -1}, {0, -1}, {1, -1},
-                {-1, 0},          {1, 0},
-                {-1, 1},  {0, 1}, {1, 1}
-            };
+        auto [sx, sy] = spawner->getPosition();
 
-            for (auto [dx, dy] : dirs) {
-                int nx = sx + dx;
-                int ny = sy + dy;
-                if (board.isInside(nx, ny) &&
-                    !board.getCell(nx, ny).isOccupied() &&
-                    board.getCell(nx, ny).getType() != CellType::Wall)
-                {
-                    auto newEnemy = std::make_shared<Enemy>(40, 10);
-                    enemies.push_back(newEnemy);
-                    board.placeEntity(newEnemy, nx, ny);
-                    std::cout << "Spawner created enemy at (" << nx << ", " << ny << ")\n";
-                    spawner->resetCounter();
-                    break;
-                }
-            }
+        std::array<Direction, 4> shuffled = cardinalDirs;
+        std::shuffle(shuffled.begin(), shuffled.end(), rng);
+
+        for (Direction dir : shuffled) {
+            auto [dx, dy] = delta(dir);
+            int nx = sx + dx;
+            int ny = sy + dy;
+
+            if (!board.isInside(nx, ny))
+                continue;
+
+            Cell& cell = board.getCell(nx, ny);
+            if (cell.isOccupied() || cell.getType() == CellType::Wall)
+                continue;
+
+            auto newEnemy = std::make_shared<Enemy>(40, 10);
+            enemies.push_back(newEnemy);
+            board.placeEntity(newEnemy, nx, ny);
+            std::cout << "Spawner created enemy at (" << nx << ", " << ny << ")\n";
+
+            spawner->resetCounter();
+            break;
         }
     }
 }
@@ -215,6 +234,7 @@ void Game::clearCmd() const {
 void Game::render() const {
     clearCmd();
     printTitle();
+    printSeed();
     std::cout << "===== TURN " << turnCounter << " =====\n";
     for (int y = 0; y < board.getHeight(); ++y) {
         for (int x = 0; x < board.getWidth(); ++x) {
@@ -228,19 +248,16 @@ void Game::render() const {
             }
 
             if (cell.isOccupied()) {
-                auto entity = cell.getEntity();
-                if (std::dynamic_pointer_cast<Player>(entity))
-                    symbol = 'P';
-                else if (std::dynamic_pointer_cast<Enemy>(entity))
-                    symbol = 'E';
-                else if (std::dynamic_pointer_cast<EnemySpawner>(entity))
-                    symbol = 'S';
+                symbol = cell.getEntity()->symbol();
             }
-
             std::cout << symbol << ' ';
         }
         std::cout << '\n';
     }
+}
+
+void Game::printSeed() const {
+    std::cout << "Game Seed: " << seed << "\n";
 }
 
 void Game::printTitle() const{
@@ -322,11 +339,6 @@ bool Game::moveEntity(MovableEntity& entity, int dx, int dy) {
 
             // Очистить клетку врага
             target.clearEntity();
-
-            // Переместить атакующего на её место
-            target.setEntity(attacker);
-            current.clearEntity();
-            entity.setPosition(newX, newY);
         }
 
         return combatHappened;
@@ -343,20 +355,40 @@ bool Game::moveEntity(MovableEntity& entity, int dx, int dy) {
     return true;
 }
 
-
-
 bool Game::handleCombat(std::shared_ptr<Entity> attacker, std::shared_ptr<Entity> defender) {
-    if (!attacker || !defender) return false;
-    if (attacker->getAttackMode() == AttackMode::Melee) {
-        defender->takeDamage(attacker->getMeleeAttackPower());
-        std::cout << "Player hits enemy for " << attacker->getMeleeAttackPower() << " damage!\n";
-        if (!defender->isAlive() && (dynamic_pointer_cast<Enemy>(defender) || dynamic_pointer_cast<EnemySpawner>(defender))) {
-            if (auto player = std::dynamic_pointer_cast<Player>(attacker)) {
-                player->addExperience(10);
-                std::cout << "Player gained 10 experience points!\n";
-            }
-        }
-        return true;
+
+    if (!attacker || !defender)
+        return false;
+    auto enemyAttacker = std::dynamic_pointer_cast<Enemy>(attacker);
+    auto enemyDefender = std::dynamic_pointer_cast<Enemy>(defender);
+    auto spawnerDefender = std::dynamic_pointer_cast<EnemySpawner>(defender);
+    if (enemyAttacker && (enemyDefender || spawnerDefender))
+        return false;
+
+    // атаковать могут только движущиеся сущности
+    auto movable = std::dynamic_pointer_cast<MovableEntity>(attacker);
+    if (!movable)
+        return false;
+
+    // ближняя атака
+    if (movable->getAttackMode() == AttackMode::Melee) {
+        movable->attack(*defender);
     }
-    return false;
+
+    // дальняя атака (обрабатывается отдельно в Game)
+    else if (movable->getAttackMode() == AttackMode::Ranged) {
+        movable->attack(*defender); // можно просто использовать тот же метод
+    }
+
+    // после атаки проверяем смерть
+
+    if (!defender->isAlive()) {
+        auto [x, y] = defender->getPosition();
+        board.getCell(x, y).clearEntity();
+        if (auto player = std::dynamic_pointer_cast<Player>(attacker)) {
+            player->addExperience(10);
+        }
+    }
+
+    return true;
 }

@@ -3,8 +3,8 @@
 #include <cstdlib>
 
 void Enemy::takeDamage(int dmg) {
-    health -= dmg;
-    if (health < 0) health = 0;
+    Entity::takeDamage(dmg);
+    std::cout << "Enemy takes " << dmg << " damage! HP: " << getHealth() << "\n";
 }
 
 void Enemy::takeTurn() {
@@ -13,8 +13,4 @@ void Enemy::takeTurn() {
     int dx = (std::rand() % 3) - 1; // -1, 0, 1
     int dy = (std::rand() % 3) - 1;
     std::cout << "Enemy tries to move (" << dx << ", " << dy << ")\n";
-}
-
-std::shared_ptr<Entity> Enemy::clone() const {
-    return std::make_shared<Enemy>(*this);
 }

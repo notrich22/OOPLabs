@@ -7,6 +7,7 @@
 #include "Cell.h"
 #include "MovableEntity.h"
 #include "Player.h"
+#include <random>
 
 // Класс Board представляет игровое поле и управляет объектами на нём
 class Board {
@@ -17,7 +18,7 @@ private:
 
 public:
     // Конструкторы
-    Board(int width, int height);
+    Board(int width, int height, std::mt19937& rng);
     Board(const Board& other);            // копирование (глубокое)
     Board(Board&& other) noexcept;        // перемещение
     Board& operator=(const Board& other);
@@ -32,9 +33,9 @@ public:
     bool isInside(int x, int y) const;    // проверка, внутри ли координаты
     Cell& getCell(int x, int y);          // получить клетку
     const Cell& getCell(int x, int y) const;
-    std::pair<int, int> getRandomFreeCell() const;
+    std::pair<int, int> getRandomFreeCell(std::mt19937& rng) const;
+	bool hasFreeNeighbor(const std::pair<int, int>& pos) const; // проверка достижимости клетки
 
     // Работа с объектами
     void placeEntity(std::shared_ptr<Entity> entity, int x, int y);  // разместить сущность
-    bool rangedAttack(Player& player, int dx, int dy, int range);    // дальняя атака игрока
 };

@@ -5,8 +5,8 @@
 class StaticEntity : public Entity {
 public:
     // Конструктор инициализирует базовые параметры сущности
-    StaticEntity(int health, int meleeAttackPower, int rangedAttackPower)
-        : Entity(health, meleeAttackPower, rangedAttackPower) {
+    StaticEntity(int health)
+        : Entity(health) {
     }
 
     virtual ~StaticEntity() = default;

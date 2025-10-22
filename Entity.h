@@ -1,55 +1,35 @@
 #pragma once
 #include <utility>
 #include <memory>
+#include <algorithm>
 
-// Режим атаки
-enum class AttackMode { Melee, Ranged };
-
-// Базовый класс Entity - сущность с общими характеристиками
+// Базовый класс сущности на поле
 class Entity {
 protected:
-    int health;             // здоровье
-    int meleeAttackPower;   // сила ближней атаки
-    int rangedAttackPower;  // сила дальней атаки
-	AttackMode attackMode = AttackMode::Melee; // текущий режим атаки
-	std::pair<int, int> position; // позиция на игровом поле (x, y)
+    int health;                    // здоровье
+    std::pair<int, int> position;  // координаты сущности на поле
 public:
-    // Конструктор с проверкой значений
-    Entity(int health, int meleeAttackPower, int rangedAttackPower)
-        : health(health > 0 ? health : 0),
-        meleeAttackPower(meleeAttackPower > 0 ? meleeAttackPower : 0),
-        rangedAttackPower(rangedAttackPower > 0 ? rangedAttackPower : 0) {
-    }
+    Entity(int health)
+        : health(std::max(0, health)) {}
 
-    Entity(const Entity&) = default;
-    Entity(Entity&&) noexcept = default;
-    Entity& operator=(const Entity&) = default;
-    Entity& operator=(Entity&&) noexcept = default;
     virtual ~Entity() = default;
 
-    // Клонирование объекта (для глубоких копий)
+    // Поведение, общее для всех
+    virtual void takeTurn() = 0;         // ход сущности (игровая логика)
+    virtual void takeDamage(int dmg) {   // получение урона
+        health = std::max(0, health - dmg);
+    }
+
     virtual std::shared_ptr<Entity> clone() const = 0;
 
-	// Абстрактные методы поведения сущности
-    virtual void takeTurn() = 0;
-    virtual void takeDamage(int dmg) = 0;
-
-    // Геттеры
+    // Доступ к данным
     int getHealth() const { return health; }
-    int getMeleeAttackPower() const { return meleeAttackPower; }
-    int getRangedAttackPower() const { return rangedAttackPower; }
-    std::pair<int, int> getPosition() const noexcept {return position;}
+    bool isAlive() const { return health > 0; }
+    virtual char symbol() const noexcept = 0;
+
+    std::pair<int,int> getPosition() const noexcept { return position; }
     int getX() const noexcept { return position.first; }
     int getY() const noexcept { return position.second; }
-	AttackMode getAttackMode() const { return attackMode; }
 
-    // Сеттеры
-    void setHealth(int h) { health = (h > 0 ? h : 0); }
-    void setMeleeAttackPower(int power) { meleeAttackPower = (power > 0 ? power : 0); }
-    void setRangedAttackPower(int power) { rangedAttackPower = (power > 0 ? power : 0); }
-	void setPosition(int x, int y) { position = { x, y }; }
-	void setAttackMode(AttackMode mode) { attackMode = mode; }
-
-    // Проверка состояния
-    bool isAlive() const { return health > 0; }
+    void setPosition(int x, int y) noexcept { position = {x, y}; }
 };

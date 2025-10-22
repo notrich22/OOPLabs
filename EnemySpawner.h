@@ -11,8 +11,8 @@ private:
 
 public:
     // Конструктор с параметрами здоровья и времени перезарядки
-    EnemySpawner(int health, int cooldown, int meleeAttackPower = 0, int rangedAttackPower = 0)
-        : StaticEntity(health, meleeAttackPower, rangedAttackPower),
+    EnemySpawner(int health, int cooldown)
+        : StaticEntity(health),
         spawnCooldown(cooldown),
         currentCounter(cooldown) {
     }
@@ -23,6 +23,7 @@ public:
     void takeTurn() override;            // ход спавнера (уменьшение счётчика, создание врага)
     void takeDamage(int dmg) override;   // получение урона
     std::shared_ptr<Entity> clone() const override; // копирование объекта
+    char symbol() const noexcept override { return 'S'; }
 
     // Проверка готовности и сброс таймера
     bool readyToSpawn() const { return currentCounter <= 0; }

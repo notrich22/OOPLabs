@@ -1,44 +1,30 @@
 #pragma once
 #include "MovableEntity.h"
+#include <iostream>
+#include "Direction.h"
 
+class Board;                 // <-- форвард-деклараци€, чтобы видеть тип
 
-//  ласс Player представл€ет управл€емого игроком персонажа
 class Player : public MovableEntity {
 private:
-    unsigned int experience;  // накопленный опыт
-    AttackMode mode;          // текущий режим атаки
-
+    unsigned int experience = 0;
+	unsigned int attackRange = 2;
 public:
-    //  онструктор с начальными параметрами здоровь€ и урона
-    Player(int health = 100, int meleeAttackPower = 20, int rangedAttackPower = 10)
-        : MovableEntity(health, meleeAttackPower, rangedAttackPower),
-        experience(0),
-        mode(AttackMode::Melee) {
+    Player(int health = 100, int melee = 20, int ranged = 10)
+        : MovableEntity(health, melee, ranged) {
     }
 
-    Player(const Player&) = default;
+    void takeTurn();
 
-    // »гровое поведение
-    void takeTurn() override;            // ход игрока
-    void takeDamage(int dmg) override;   // получение урона
+    void takeDamage(int dmg) override;
+    void addExperience(unsigned int exp);
+    char symbol() const noexcept override { return 'P'; }
 
-    // –абота с опытом
-    void addExperience(unsigned int exp) { experience += exp; }
     unsigned int getExperience() const { return experience; }
-
-    // ѕереключение между ближней и дальней атакой
-    void switchMode() {
-        mode = (mode == AttackMode::Melee) ? AttackMode::Ranged : AttackMode::Melee;
-    }
-
-    // ѕолучить текущий режим и дальность атаки
-    AttackMode getAttackMode() const { return mode; }
-    int getAttackRange() const {
-        return (mode == AttackMode::Melee) ? 1 : 3;
-    }
-
-    //  лонирование объекта (дл€ копировани€ сущностей на поле)
+	unsigned int getAttackRange() const { return attackRange; }
+    void switchMode();
     std::shared_ptr<Entity> clone() const override {
         return std::make_shared<Player>(*this);
     }
+
 };

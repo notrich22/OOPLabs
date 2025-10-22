@@ -2,8 +2,8 @@
 #include <iostream>
 
 void EnemySpawner::takeDamage(int dmg) {
-    health -= dmg;
-    if (health < 0) health = 0;
+	Entity::takeDamage(dmg);
+    std::cout << "EnemySpawner took " << dmg << " damage! HP left: " << getHealth() << "\n";
 }
 
 

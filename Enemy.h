@@ -1,21 +1,17 @@
 #pragma once
 #include "MovableEntity.h"
-#include <memory>
+#include <iostream>
 
-// Класс Enemy - сущность врага, способная перемещаться и атаковать
 class Enemy : public MovableEntity {
 public:
-    // Конструктор инициализирует параметры здоровья и урона
     Enemy(int health, int meleeAttackPower, int rangedAttackPower = 0)
         : MovableEntity(health, meleeAttackPower, rangedAttackPower) {
     }
 
-    Enemy(const Enemy&) noexcept = default;
+    void takeTurn() override;
 
-    // Логика поведения врага
-    void takeTurn() override;            // действие врага на своём ходу
-    void takeDamage(int dmg) override;   // получение урона
+    void takeDamage(int dmg) override;
+    char symbol() const noexcept override { return 'E'; }
 
-    // Создание копии объекта
-    std::shared_ptr<Entity> clone() const override;
+    std::shared_ptr<Entity> clone() const override { return std::make_shared<Enemy>(*this); }
 };

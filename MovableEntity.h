@@ -1,28 +1,39 @@
 #pragma once
 #include "Entity.h"
-#include <memory>
+#include <iostream>
 
-// Класс MovableEntity описывает сущность, способную перемещаться по полю
+enum class AttackMode { Melee, Ranged };
+// Любая подвижная сущность (игрок, враг и т.п.)
 class MovableEntity : public Entity {
 protected:
-    bool skipNextMove_ = false;  // пропуск следующего хода
+    int meleeAttackPower;
+    int rangedAttackPower;
+    AttackMode attackMode = AttackMode::Melee;
+    bool skipNextMove_ = false;
 
 public:
-    // Конструктор инициализирует параметры здоровья и урона
-    MovableEntity(int health, int meleeAttackPower, int rangedAttackPower)
-        : Entity(health, meleeAttackPower, rangedAttackPower) {
+    MovableEntity(int health, int meleePower, int rangedPower = 0)
+        : Entity(health),
+        meleeAttackPower(std::max(0, meleePower)),
+        rangedAttackPower(std::max(0, rangedPower)) {
     }
 
-    MovableEntity(const MovableEntity&) = default;
-    MovableEntity(MovableEntity&&) noexcept = default;
-    MovableEntity& operator=(const MovableEntity&) = default;
-    MovableEntity& operator=(MovableEntity&&) noexcept = default;
     virtual ~MovableEntity() = default;
 
-    // Создание копии объекта
-    virtual std::shared_ptr<Entity> clone() const = 0;
+    // Настройка атаки
+    void setAttackMode(AttackMode m) { attackMode = m; }
+    AttackMode getAttackMode() const { return attackMode; }
 
-    // Управление состоянием пропуска хода
+    int getMeleeAttackPower() const { return meleeAttackPower; }
+    int getRangedAttackPower() const { return rangedAttackPower; }
+
+    // Простая ближняя атака
+    virtual void attack(Entity& target) {
+        if (!isAlive()) return;
+        target.takeDamage(attackMode == AttackMode::Melee? getMeleeAttackPower() : getRangedAttackPower());
+    }
+    
+    // управление ходом
     bool shouldSkipMove() const { return skipNextMove_; }
     void setSkipNextMove(bool v) { skipNextMove_ = v; }
 };

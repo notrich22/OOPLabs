@@ -3,7 +3,11 @@
 
 int main() {
     try {
-        Game game(10, 10);
+        unsigned seed;
+        std::cout << "Enter seed (0 for random): ";
+        std::cin >> seed;
+        if (seed == 0) seed = std::random_device{}();
+        Game game(10, 10, seed);
         game.init();
         game.run();
     }
@@ -12,4 +16,3 @@ int main() {
         return 1;
     }
 }
-//TODO: Перенести логику хода в Game, сделать удаление игроков, исправить direction на enums
