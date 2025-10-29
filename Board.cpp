@@ -6,22 +6,23 @@
 #include <cstdlib>
 #include <queue>
 #include <set>
+#include "Config.h"
 
 Board::Board(int width, int height, std::mt19937& rng)
     : width(width), height(height), grid(height, std::vector<Cell>(width))
 {
-    std::uniform_int_distribution<int> dist(0, 99);
+    std::uniform_real_distribution<double> dist(0.0, 1.0); // от 0 до 1
 
     for (int y = 0; y < height; ++y) {
         for (int x = 0; x < width; ++x) {
-            int r = dist(rng);
+            double r = dist(rng);
 
-            if (r < 10)
-                grid[y][x].setType(CellType::Wall);      // 10%
-            else if (r < 15)
-                grid[y][x].setType(CellType::Slow);      // 5%
+            if (r < Config::WALL_PROBABILITY)
+                grid[y][x].setType(CellType::Wall);
+            else if (r < Config::WALL_PROBABILITY + Config::SLOW_PROBABILITY)
+                grid[y][x].setType(CellType::Slow);
             else
-                grid[y][x].setType(CellType::Normal);    // остальное
+                grid[y][x].setType(CellType::Normal);
         }
     }
 }

@@ -25,8 +25,6 @@ inline std::optional<Direction> keyToDir(char key) noexcept {
     default:  return std::nullopt;
     }
 }
-
-// === Добавь это ===
 constexpr std::array<Direction, 4> cardinalDirs = {
     Direction::Up, Direction::Down, Direction::Left, Direction::Right
 };

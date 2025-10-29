@@ -2,7 +2,7 @@
 #include <iostream>
 
 void EnemySpawner::takeDamage(int dmg) {
-	Entity::takeDamage(dmg);
+	ICombatEntity::takeDamage(dmg);
     std::cout << "EnemySpawner took " << dmg << " damage! HP left: " << getHealth() << "\n";
 }
 

@@ -1,46 +1,64 @@
 @startuml UML
-title Class Diagram
-
 skinparam shadowing false
 skinparam classAttributeIconSize 0
 
 ' ================== ENUMS ==================
-enum AttackMode <<enumeration>>{
+enum AttackMode <<enumeration>> {
     Melee
     Ranged
 }
 
-enum CellType <<enumeration>>{
+enum CellType <<enumeration>> {
     Normal
     Wall
     Slow
 }
 
-' ================== ABSTRACT CLASSES ==================
+enum Direction <<enumeration>> {
+    Up
+    Down
+    Left
+    Right
+    None
+}
+
+' ================== BASE ABSTRACT CLASSES ==================
 abstract class "Entity" <<abstract>> {
     - health: int
-    - meleeAttackPower: int
-    - rangedAttackPower: int
-    + clone(): Entity
+    - position: pair<int,int>
+    + Entity(health: int)
+    + virtual ~Entity()
     + takeTurn(): void
     + takeDamage(dmg: int): void
+    + clone(): shared_ptr<Entity>
     + getHealth(): int
-    + getMeleeAttackPower(): int
-    + getRangedAttackPower(): int
-    + setHealth(h: int): void
-    + setMeleeAttackPower(power: int): void
-    + setRangedAttackPower(power: int): void
     + isAlive(): bool
+    + getPosition(): pair<int,int>
+    + getX(): int
+    + getY(): int
+    + setPosition(x: int, y: int): void
+    + symbol(): char
 }
 
 abstract class "MovableEntity" <<abstract>> {
-    - skipNextMove: bool
-    + clone(): Entity
+    - meleeAttackPower: int
+    - rangedAttackPower: int
+    - attackMode: AttackMode
+    - skipNextMove_: bool
+    + MovableEntity(health: int, meleePower: int, rangedPower: int)
+    + virtual ~MovableEntity()
+    + setAttackMode(m: AttackMode): void
+    + getAttackMode(): AttackMode
+    + getMeleeAttackPower(): int
+    + getRangedAttackPower(): int
+    + attack(target: Entity&): void
     + shouldSkipMove(): bool
     + setSkipNextMove(v: bool): void
 }
 
 abstract class "StaticEntity" <<abstract>> {
+    + StaticEntity(health: int)
+    + virtual ~StaticEntity()
     + takeTurn(): void
 }
 
@@ -49,32 +67,37 @@ abstract class "StaticEntity" <<abstract>> {
 
 ' ================== DERIVED CLASSES ==================
 class "Player" {
-    - experience: uint
-    - mode: AttackMode
+    - experience: unsigned int
+    - attackRange: unsigned int
+    + Player(health=100, melee=20, ranged=10)
     + takeTurn(): void
     + takeDamage(dmg: int): void
     + addExperience(exp: uint): void
     + getExperience(): uint
+    + getAttackRange(): uint
     + switchMode(): void
-    + getAttackMode(): AttackMode
-    + getAttackRange(): int
-    + clone(): Entity
+    + symbol(): char
+    + clone(): shared_ptr<Entity>
 }
 
 class "Enemy" {
+    + Enemy(health: int, meleeAttackPower: int, rangedAttackPower=0)
     + takeTurn(): void
     + takeDamage(dmg: int): void
-    + clone(): Entity
+    + symbol(): char
+    + clone(): shared_ptr<Entity>
 }
 
 class "EnemySpawner" {
     - spawnCooldown: int
     - currentCounter: int
+    + EnemySpawner(health: int, cooldown: int)
     + takeTurn(): void
     + takeDamage(dmg: int): void
-    + clone(): Entity
     + readyToSpawn(): bool
     + resetCounter(): void
+    + clone(): shared_ptr<Entity>
+    + symbol(): char
 }
 
 "MovableEntity" <|-- "Player"
@@ -84,54 +107,76 @@ class "EnemySpawner" {
 ' ================== FIELD CLASSES ==================
 class "Cell" {
     - type: CellType
-    - entity: Entity [0..1]
+    - entity: shared_ptr<Entity>
+    + Cell(type: CellType = Normal)
+    + Cell(const Cell& other)
+    + Cell(Cell&&) noexcept
+    + operator=(const Cell& other): Cell&
+    + operator=(Cell&&) noexcept: Cell&
     + getType(): CellType
     + setType(newType: CellType): void
     + isOccupied(): bool
-    + getEntity(): Entity
-    + setEntity(e: Entity): void
+    + getEntity(): shared_ptr<Entity>
+    + setEntity(e: shared_ptr<Entity>): void
     + clearEntity(): void
 }
 
 class "Board" {
     - width: int
     - height: int
-    - grid: Cell[*][*]
+    - grid: vector<vector<Cell>>
+    + Board(width: int, height: int, rng: mt19937&)
+    + Board(const Board& other)
+    + Board(Board&& other)
+    + operator=(const Board& other): Board&
+    + operator=(Board&& other): Board&
+    + ~Board()
+    + getWidth(): int
+    + getHeight(): int
     + isInside(x: int, y: int): bool
-    + getCell(x: int, y: int): Cell
-    + rangedAttack(p: Player, dx: int, dy: int, range: int): bool
-    + moveEntity(e: MovableEntity, dx: int, dy: int): bool
-    + placeEntity(e: Entity, x: int, y: int): void
+    + getCell(x: int, y: int): Cell&
+    + getCell(x: int, y: int) const: const Cell&
+    + getRandomFreeCell(rng: mt19937&): pair<int,int>
+    + hasFreeNeighbor(pos: pair<int,int>): bool
+    + placeEntity(entity: shared_ptr<Entity>, x: int, y: int): void
 }
 
+' ================== GAME CORE ==================
 class "Game" {
+    - rng: mt19937
+    - seed: unsigned
     - board: Board
-    - player: Player [1]
-    - enemies: Enemy[*]
-    - spawners: EnemySpawner[*]
+    - player: shared_ptr<Player>
+    - enemies: vector<shared_ptr<Enemy>>
+    - spawners: vector<shared_ptr<EnemySpawner>>
     - turnCounter: int
     - isRunning: bool
     - MAX_ENEMIES: int
+    + Game(width: int, height: int, seed: unsigned)
     + init(): void
+    + spawnEntity(entity: shared_ptr<Entity>): void
     + run(): void
-    + processPlayerTurn(): void
-    + processEnemies(): void
-    + processSpawners(): void
     + clearCmd(): void
     + printTitle(): void
+    + printSeed(): void
+    + render(): void
     + checkGameOver(): bool
     + printWin(): void
-    + render(): void
+    - processPlayerTurn(): void
+    - processEnemies(): void
+    - processSpawners(): void
+    - moveEntity(entity: MovableEntity&, dx: int, dy: int): bool
+    - findTargetInDirection(source: shared_ptr<Entity>, dir: Direction, range: int): shared_ptr<Entity>
+    - handleCombat(attacker: shared_ptr<Entity>, defender: shared_ptr<Entity>): bool
 }
 
 ' ================== RELATIONSHIPS ==================
 "Board" *-- "Cell" : grid
 "Cell" o-- "Entity" : entity
-"Board" o-- "Entity"
 "Game" *-- "Board"
-"Game" *-- "Player"
-"Game" *-- "Enemy"
-"Game" *-- "EnemySpawner"
+"Game" o-- "Player"
+"Game" o-- "Enemy"
+"Game" o-- "EnemySpawner"
 "EnemySpawner" ..> "Enemy" : creates
 
 @enduml

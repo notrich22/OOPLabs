@@ -1,21 +1,27 @@
 #pragma once
 #include "StaticEntity.h"
-#include "Enemy.h"
 #include <memory>
-
+#include "Config.h"
+#include "ICombatEntity.h"
 // Класс EnemySpawner создаёт врагов через определённые интервалы времени
-class EnemySpawner : public StaticEntity {
+class EnemySpawner : public StaticEntity, public ICombatEntity {
 private:
     int spawnCooldown;    // период между спавнами
     int currentCounter;   // счётчик до следующего спавна
 
 public:
     // Конструктор с параметрами здоровья и времени перезарядки
-    EnemySpawner(int health, int cooldown)
-        : StaticEntity(health),
+    EnemySpawner(int health = Config::SPAWNER_HEALTH, int cooldown = Config::SPAWN_COOLDOWN)
+        : StaticEntity(),
+        ICombatEntity(),
         spawnCooldown(cooldown),
-        currentCounter(cooldown) {
+        currentCounter(cooldown)
+    {
+        health_ = health;
+        meleeAttackPower_ = 0;
+        rangedAttackPower_ = 0;
     }
+
 
     EnemySpawner(const EnemySpawner&) noexcept = default;
 
@@ -23,9 +29,10 @@ public:
     void takeTurn() override;            // ход спавнера (уменьшение счётчика, создание врага)
     void takeDamage(int dmg) override;   // получение урона
     std::shared_ptr<Entity> clone() const override; // копирование объекта
-    char symbol() const noexcept override { return 'S'; }
+	char symbol() const noexcept override { return 'S'; } // символ спавнера на поле
+	std::pair<int, int> getPosition() const override { return Entity::getPosition(); }
+	Faction faction() const override { return Faction::Enemy; } // фракция спавнера
+    bool readyToSpawn() const noexcept { return currentCounter <= 0; } // Проверка готовности 
+    void resetCounter() noexcept { currentCounter = spawnCooldown; } // Cброс таймера
 
-    // Проверка готовности и сброс таймера
-    bool readyToSpawn() const { return currentCounter <= 0; }
-    void resetCounter() { currentCounter = spawnCooldown; }
 };

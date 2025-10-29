@@ -39,12 +39,12 @@ public:
     }
 
     // Работа с типом клетки
-    CellType getType() const { return type; }
-    void setType(CellType newType) { type = newType; }
+    CellType getType() const noexcept { return type; }
+    void setType(CellType newType) noexcept { type = newType; }
 
     // Работа с сущностью
-    bool isOccupied() const { return entity != nullptr; }        // занята ли клетка
-    std::shared_ptr<Entity> getEntity() const { return entity; }  // получить сущность
+    bool isOccupied() const noexcept { return entity != nullptr; }        // занята ли клетка
+    std::shared_ptr<Entity> getEntity() const noexcept { return entity; }  // получить сущность
     void setEntity(std::shared_ptr<Entity> e) { entity = std::move(e); } // поместить сущность
-    void clearEntity() { entity.reset(); }                        // очистить клетку
+    void clearEntity() noexcept { entity.reset(); }                        // очистить клетку
 };

@@ -125,23 +125,47 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Board.cpp" />
+    <ClCompile Include="CombatController.cpp" />
+    <ClCompile Include="DirectDamageSpell.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="EnemySpawner.cpp" />
     <ClCompile Include="EnemySpawner.h" />
+    <ClCompile Include="EnhancementState.h" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="ICombatEntity.h" />
+    <ClCompile Include="IBuffSpell.h" />
+    <ClCompile Include="IDirectDamageSpell.h" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MovementController.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="PrintController.cpp" />
+    <ClCompile Include="Relationships.h" />
+    <ClCompile Include="SpellController.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Board.h" />
+    <ClInclude Include="CastContext.h" />
     <ClInclude Include="Cell.h" />
+    <ClInclude Include="CombatController.h" />
+    <ClInclude Include="Config.h" />
+    <ClInclude Include="DirectDamageSpell.h" />
     <ClInclude Include="Direction.h" />
     <ClInclude Include="Enemy.h" />
+    <ClInclude Include="EnemyTower.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="IAOESpell.h" />
+    <ClInclude Include="ISpell.h" />
+    <ClInclude Include="ISummonSpell.h" />
+    <ClInclude Include="ITrap.h" />
     <ClInclude Include="MovableEntity.h" />
+    <ClInclude Include="MovementController.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="PrintController.h" />
+    <ClInclude Include="SpellController.h" />
+    <ClInclude Include="SpellHand.h" />
     <ClInclude Include="StaticEntity.h" />
+    <ClInclude Include="Trap.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

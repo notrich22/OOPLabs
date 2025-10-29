@@ -13,57 +13,159 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Исходные файлы\core">
+      <UniqueIdentifier>{09fa7683-0602-401d-b54f-62c783c52a1d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\entities">
+      <UniqueIdentifier>{1d80e934-eb08-4221-b7d9-5f6018d5d450}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\spells">
+      <UniqueIdentifier>{5003aa84-6663-41e1-aa4c-11aa293a2fe8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\controllers">
+      <UniqueIdentifier>{6f688c1e-dec5-4f45-89cc-da798a197195}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\core">
+      <UniqueIdentifier>{deb7ac80-6062-4e38-a98e-2e2810cbb5e0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\entities">
+      <UniqueIdentifier>{6c8d8e13-66ce-4d75-a622-1d95ee5294f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\controllers">
+      <UniqueIdentifier>{e0a4b2e0-fe0a-4357-9f1c-415ffc785d71}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\spells">
+      <UniqueIdentifier>{d6265d01-fca8-48d8-a8f5-85d2d999508e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\spells\interfaces">
+      <UniqueIdentifier>{a6bb812c-506b-4503-b649-2602c5631184}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\entities\interfaces">
+      <UniqueIdentifier>{8a7597eb-6ffa-4e40-abda-d1e0c99f3c88}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>Исходные файлы</Filter>
+    <ClCompile Include="Board.cpp">
+      <Filter>Исходные файлы\core</Filter>
     </ClCompile>
-    <ClCompile Include="Player.cpp">
-      <Filter>Исходные файлы</Filter>
+    <ClCompile Include="PrintController.cpp">
+      <Filter>Исходные файлы\controllers</Filter>
+    </ClCompile>
+    <ClCompile Include="MovementController.cpp">
+      <Filter>Исходные файлы\controllers</Filter>
+    </ClCompile>
+    <ClCompile Include="SpellController.cpp">
+      <Filter>Исходные файлы\controllers</Filter>
+    </ClCompile>
+    <ClCompile Include="CombatController.cpp">
+      <Filter>Исходные файлы\controllers</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectDamageSpell.cpp">
+      <Filter>Исходные файлы\spells</Filter>
     </ClCompile>
     <ClCompile Include="Enemy.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="EnemySpawner.h">
-      <Filter>Файлы заголовков</Filter>
+      <Filter>Исходные файлы\entities</Filter>
     </ClCompile>
     <ClCompile Include="EnemySpawner.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="Board.cpp">
-      <Filter>Исходные файлы</Filter>
+      <Filter>Исходные файлы\entities</Filter>
     </ClCompile>
     <ClCompile Include="Game.cpp">
-      <Filter>Исходные файлы</Filter>
+      <Filter>Исходные файлы\core</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Исходные файлы\core</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Исходные файлы\entities</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemySpawner.h">
+      <Filter>Файлы заголовков\entities</Filter>
+    </ClCompile>
+    <ClCompile Include="IDirectDamageSpell.h">
+      <Filter>Файлы заголовков\spells\interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="IBuffSpell.h">
+      <Filter>Файлы заголовков\spells\interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="EnhancementState.h">
+      <Filter>Файлы заголовков\spells</Filter>
+    </ClCompile>
+    <ClCompile Include="ICombatEntity.h">
+      <Filter>Файлы заголовков\entities\interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="Relationships.h">
+      <Filter>Файлы заголовков\core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Entity.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="Player.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="Enemy.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="MovableEntity.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="StaticEntity.h">
-      <Filter>Файлы заголовков</Filter>
+    <ClInclude Include="Board.h">
+      <Filter>Файлы заголовков\core</Filter>
     </ClInclude>
     <ClInclude Include="Cell.h">
-      <Filter>Файлы заголовков</Filter>
+      <Filter>Файлы заголовков\core</Filter>
     </ClInclude>
-    <ClInclude Include="Board.h">
-      <Filter>Файлы заголовков</Filter>
+    <ClInclude Include="CombatController.h">
+      <Filter>Файлы заголовков\controllers</Filter>
     </ClInclude>
-    <ClInclude Include="Game.h">
-      <Filter>Файлы заголовков</Filter>
+    <ClInclude Include="DirectDamageSpell.h">
+      <Filter>Файлы заголовков\spells</Filter>
     </ClInclude>
     <ClInclude Include="Direction.h">
-      <Filter>Файлы заголовков</Filter>
+      <Filter>Файлы заголовков\core</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemy.h">
+      <Filter>Файлы заголовков\entities</Filter>
+    </ClInclude>
+    <ClInclude Include="Config.h">
+      <Filter>Файлы заголовков\core</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyTower.h">
+      <Filter>Файлы заголовков\entities</Filter>
+    </ClInclude>
+    <ClInclude Include="Game.h">
+      <Filter>Файлы заголовков\core</Filter>
+    </ClInclude>
+    <ClInclude Include="MovementController.h">
+      <Filter>Файлы заголовков\controllers</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Файлы заголовков\entities</Filter>
+    </ClInclude>
+    <ClInclude Include="PrintController.h">
+      <Filter>Файлы заголовков\controllers</Filter>
+    </ClInclude>
+    <ClInclude Include="SpellController.h">
+      <Filter>Файлы заголовков\controllers</Filter>
+    </ClInclude>
+    <ClInclude Include="SpellHand.h">
+      <Filter>Файлы заголовков\spells</Filter>
+    </ClInclude>
+    <ClInclude Include="Trap.h">
+      <Filter>Файлы заголовков\entities</Filter>
+    </ClInclude>
+    <ClInclude Include="Entity.h">
+      <Filter>Файлы заголовков\entities\interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="MovableEntity.h">
+      <Filter>Файлы заголовков\entities\interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="StaticEntity.h">
+      <Filter>Файлы заголовков\entities\interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="ISpell.h">
+      <Filter>Файлы заголовков\spells\interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="IAOESpell.h">
+      <Filter>Файлы заголовков\spells\interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="ITrap.h">
+      <Filter>Файлы заголовков\spells\interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="ISummonSpell.h">
+      <Filter>Файлы заголовков\spells\interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="CastContext.h">
+      <Filter>Файлы заголовков\spells</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
