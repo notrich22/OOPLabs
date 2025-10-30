@@ -43,7 +43,8 @@ public:
     void setType(CellType newType) noexcept { type = newType; }
 
     // Работа с сущностью
-    bool isOccupied() const noexcept { return entity != nullptr; }        // занята ли клетка
+    bool hasEntity() const noexcept { return entity != nullptr; }
+    bool isOccupied() const noexcept { return entity && entity->isBlocking(); }
     std::shared_ptr<Entity> getEntity() const noexcept { return entity; }  // получить сущность
     void setEntity(std::shared_ptr<Entity> e) { entity = std::move(e); } // поместить сущность
     void clearEntity() noexcept { entity.reset(); }                        // очистить клетку

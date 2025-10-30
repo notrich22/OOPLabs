@@ -69,6 +69,14 @@ const Cell& Board::getCell(int x, int y) const {
     return grid[y][x];
 }
 
+Cell& Board::getCell(std::pair<int, int> xy) {
+    return grid[xy.second][xy.first];
+}
+
+const Cell& Board::getCell(std::pair<int, int> xy) const{
+    return grid[xy.second][xy.first];
+}
+
 void Board::placeEntity(std::shared_ptr<Entity> entity, int x, int y) {
     if (!isInside(x, y))
         throw std::out_of_range("Invalid position for entity");

@@ -13,7 +13,7 @@ public:
     }
 
     // ѕоиск первой цели в направлении dir в пределах range
-    std::shared_ptr<ICombatEntity> findTargetInDirection(
+    std::shared_ptr<Entity> findTargetInDirection(
         const std::shared_ptr<ICombatEntity>& source,
         Direction dir,
         int range) const;

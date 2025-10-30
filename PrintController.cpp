@@ -17,9 +17,17 @@ void PrintController::renderBoard(const Board& board, int turnCounter, unsigned 
     clearScreen();
     printTitle();
     printSeed(seed);
-    std::cout << "===== TURN " << turnCounter << " =====\n";
+    std::cout << "===== TURN " << turnCounter << " =====\n\n";
+
+
+    std::cout << "   ";
+    for (int x = 0; x < board.getWidth(); ++x)
+        std::cout << x % 10 << ' ';
+    std::cout << "\n";
 
     for (int y = 0; y < board.getHeight(); ++y) {
+        std::cout << (y % 10) << "  ";
+
         for (int x = 0; x < board.getWidth(); ++x) {
             const Cell& cell = board.getCell(x, y);
             char symbol = '.';
@@ -30,7 +38,7 @@ void PrintController::renderBoard(const Board& board, int turnCounter, unsigned 
             case CellType::Normal: symbol = '.'; break;
             }
 
-            if (cell.isOccupied())
+            if (cell.hasEntity())
                 symbol = cell.getEntity()->symbol();
 
             std::cout << symbol << ' ';

@@ -1,11 +1,12 @@
 ﻿#include "CombatController.h"
 #include "Enemy.h"
 #include "EnemySpawner.h"
+#include "EnemyTower.h"
 #include "Config.h"
 #include <iostream>
 #include <algorithm>
 
-std::shared_ptr<ICombatEntity> CombatController::findTargetInDirection(
+std::shared_ptr<Entity> CombatController::findTargetInDirection(
     const std::shared_ptr<ICombatEntity>& source,
     Direction dir,
     int range) const
@@ -17,13 +18,15 @@ std::shared_ptr<ICombatEntity> CombatController::findTargetInDirection(
         int nx = x + dx * step;
         int ny = y + dy * step;
 
-        if (!board.isInside(nx, ny)) break;
+        if (!board.isInside(nx, ny))
+            break;
 
         const Cell& cell = board.getCell(nx, ny);
         if (cell.getType() == CellType::Wall)
             break;
+
         if (cell.isOccupied())
-            return std::dynamic_pointer_cast<ICombatEntity>(cell.getEntity());
+            return cell.getEntity();
     }
 
     return nullptr;
@@ -36,22 +39,29 @@ bool CombatController::handleCombat(
     if (!attacker || !defender) return false;
     if (!attacker->isAlive() || !defender->isAlive()) return false;
 
-    // Проверяем правила враждебности
-    //if (!rules.canDealDamage(attacker->faction(), defender->faction()))
-        //return false;
+    // не атакуем союзников
+    if (attacker->faction() == defender->faction())
+        return false;
 
-    // Совершаем атаку
+    // производим атаку
     attacker->attack(*defender);
 
+    // если цель умерла — убираем её с поля
     if (!defender->isAlive()) {
         auto [x, y] = defender->getPosition();
         board.getCell(x, y).clearEntity();
-        std::cout << "Target destroyed!\n";
 
-        // Награда игроку за убийство
+        std::cout << "Entity at (" << x << "," << y << ") destroyed!\n";
+
+        // награда игроку только за убийство врага
         if (attacker->faction() == Faction::Player) {
             if (auto player = std::dynamic_pointer_cast<Player>(attacker)) {
                 player->addExperience(Config::DAMAGE_EXPERIENCE_REWARD);
+
+                if (player->getExperience() % 10 == 0) {
+                    player->getSpellHand().addRandomSpell();
+                    std::cout << "You gained a new spell card!\n";
+                }
             }
         }
     }

@@ -15,6 +15,7 @@ public:
     virtual void takeTurn() = 0;                     // поведение сущности
     virtual std::shared_ptr<Entity> clone() const = 0; // клонирование
     virtual char symbol() const noexcept = 0;          // символ на поле
+    virtual bool isBlocking() const noexcept { return true; }
 
     // Доступ к данным
     std::pair<int, int> getPosition() const noexcept { return position; }

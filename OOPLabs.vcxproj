@@ -126,7 +126,10 @@
   <ItemGroup>
     <ClCompile Include="Board.cpp" />
     <ClCompile Include="CombatController.cpp" />
-    <ClCompile Include="DirectDamageSpell.cpp" />
+    <ClCompile Include="EnemyTower.cpp" />
+    <ClCompile Include="EnhanceSpell.h" />
+    <ClCompile Include="Explosion.cpp" />
+    <ClCompile Include="Firebolt.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="EnemySpawner.cpp" />
     <ClCompile Include="EnemySpawner.h" />
@@ -140,15 +143,21 @@
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PrintController.cpp" />
     <ClCompile Include="Relationships.h" />
-    <ClCompile Include="SpellController.cpp" />
+    <ClCompile Include="SummonAlly.cpp" />
+    <ClCompile Include="SummonAlly.h" />
+    <ClCompile Include="TowerController.cpp" />
+    <ClCompile Include="TrapEntity.cpp" />
+    <ClCompile Include="TrapSpell.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Ally.h" />
     <ClInclude Include="Board.h" />
     <ClInclude Include="CastContext.h" />
     <ClInclude Include="Cell.h" />
     <ClInclude Include="CombatController.h" />
     <ClInclude Include="Config.h" />
-    <ClInclude Include="DirectDamageSpell.h" />
+    <ClInclude Include="Explosion.h" />
+    <ClInclude Include="Firebolt.h" />
     <ClInclude Include="Direction.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="EnemyTower.h" />
@@ -157,15 +166,17 @@
     <ClInclude Include="IAOESpell.h" />
     <ClInclude Include="ISpell.h" />
     <ClInclude Include="ISummonSpell.h" />
-    <ClInclude Include="ITrap.h" />
+    <ClInclude Include="ITrapSpell.h" />
     <ClInclude Include="MovableEntity.h" />
     <ClInclude Include="MovementController.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="PrintController.h" />
-    <ClInclude Include="SpellController.h" />
+    <ClInclude Include="SpellFactory.cpp" />
     <ClInclude Include="SpellHand.h" />
     <ClInclude Include="StaticEntity.h" />
-    <ClInclude Include="Trap.h" />
+    <ClInclude Include="TowerController.h" />
+    <ClInclude Include="TrapEntity.h" />
+    <ClInclude Include="TrapSpell.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

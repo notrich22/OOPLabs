@@ -13,6 +13,7 @@ private:
     unsigned int attackRange_ = Config::PLAYER_ATTACK_RANGE;  // дальность стрельбы
     unsigned int mana_ = 100;                         // мана игрока
     SpellHand spellHand_{ Config::PLAYER_SPELLS_COUNT }; // рука со спеллами
+	EnhancementState enhancementState_;          // состояние улучшений
 public:
     Player(
         int health = Config::PLAYER_DEFAULT_HEALTH,
@@ -44,7 +45,7 @@ public:
     // Работа со спеллами
     SpellHand& getSpellHand() noexcept { return spellHand_; }
     const SpellHand& getSpellHand() const noexcept { return spellHand_; }
-
+	EnhancementState& getEnhancementState() noexcept { return enhancementState_; }
     // Переключение режима атаки
     void switchMode();
 };

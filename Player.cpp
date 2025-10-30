@@ -35,7 +35,7 @@ std::shared_ptr<Entity> Player::clone() const {
     copy->health_ = this->health_;
     copy->attackRange_ = this->attackRange_;
     copy->mana_ = this->mana_;
-
+	copy->enhancementState_ = this->enhancementState_;
     // копируем все спеллы (глубоко)
     auto& sourceHand = this->spellHand_;
     auto& targetHand = copy->spellHand_;

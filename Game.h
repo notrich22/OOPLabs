@@ -11,7 +11,21 @@
 #include "CombatController.h"
 #include "MovementController.h"
 #include "PrintController.h"
-#include "SpellController.h"
+#include "TowerController.h"
+
+#include <iostream>
+#include <cstdlib>
+#include <ctime>
+#include <stdexcept>
+#include <algorithm>
+#include "Direction.h"
+#include "Firebolt.h"
+#include "Explosion.h"
+#include "TrapSpell.h"
+#include "SummonAlly.h"
+#include "EnhanceSpell.h"
+#include "Ally.h"
+
 // Класс Game управляет общим циклом игры
 class Game {
 private:
@@ -24,13 +38,12 @@ private:
     std::shared_ptr<Player> player;
     std::vector<std::shared_ptr<Enemy>> enemies;
     std::vector<std::shared_ptr<EnemySpawner>> spawners;
-
+	std::vector<std::shared_ptr<Ally>> allies;
     // Контроллеры
     CombatController combat;
     MovementController movement;
     PrintController printer;
-	SpellController spellController{ board, combat, printer, player, enhancement };
-
+    TowerController towerController;
     // Состояние игры
     int turnCounter = 1;
     bool isRunning = false;
@@ -38,9 +51,10 @@ private:
 
     // Ходы и фазы игры
     void processPlayerTurn();
+    void processAllies();
     void processEnemies();
     void processSpawners();
-
+	void processTowers();
     // Вспомогательные методы
     bool checkGameOver() const;
 

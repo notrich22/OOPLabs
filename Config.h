@@ -12,7 +12,7 @@ namespace Config {
     constexpr int PLAYER_MELEE_DAMAGE = 20;
     constexpr int PLAYER_RANGED_DAMAGE = 10;
     constexpr int PLAYER_ATTACK_RANGE = 2;
-    constexpr int PLAYER_SPELLS_COUNT = 3;
+    constexpr int PLAYER_SPELLS_COUNT = 5;
     // ----- ¬раги -----
     constexpr int ENEMY_DEFAULT_HEALTH = 40;
     constexpr int ENEMY_MELEE_DAMAGE = 10;
@@ -20,9 +20,14 @@ namespace Config {
     // ----- —павнер -----
     constexpr int SPAWNER_HEALTH = 100;
     constexpr int SPAWN_COOLDOWN = 4;   // через сколько ходов по€вл€етс€ враг
+    // ----- Ѕашн€ -----
+    constexpr int TOWER_DEFAULT_HEALTH = 50;
+    constexpr int TOWER_DEFAULT_COOLDOWN = 3;
 
     // ----- √енераци€ врагов -----
     constexpr double ENEMY_DENSITY_FACTOR = 0.05; // плотность врагов = 5% от площади пол€
+    constexpr double ENEMYTOWER_DENSITY_FACTOR = 0.01; // плотность башен = 1% от площади пол€
+    constexpr double SPAWNER_DENSITY_FACTOR = 0.02; // плотность врагов = 2% от площади пол€
 
     // ----- Ёффекты клеток -----
     constexpr double WALL_PROBABILITY = 0.1;  // веро€тность стены при генерации

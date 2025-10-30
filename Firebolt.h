@@ -3,15 +3,15 @@
 #include "CastContext.h"
 #include <string>
 
-class DirectDamageSpell final : public IDirectDamageSpell {
+class Firebolt final : public IDirectDamageSpell {
     int damage_;
     int range_;
 public:
-    DirectDamageSpell(int damage = 10, int range = 3)
+    Firebolt(int damage = 10, int range = 3)
         : damage_(damage), range_(range) {
     }
 
-    std::string name() const override { return "Direct Damage"; }
+    std::string name() const override { return "Firebolt"; }
     int baseDamage() const override { return damage_; }
     int range() const override { return range_; }
 

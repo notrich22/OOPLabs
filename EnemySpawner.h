@@ -3,11 +3,10 @@
 #include <memory>
 #include "Config.h"
 #include "ICombatEntity.h"
-// Класс EnemySpawner создаёт врагов через определённые интервалы времени
 class EnemySpawner : public StaticEntity, public ICombatEntity {
 private:
-    int spawnCooldown;    // период между спавнами
-    int currentCounter;   // счётчик до следующего спавна
+    int spawnCooldown;
+    int currentCounter;
 
 public:
     // Конструктор с параметрами здоровья и времени перезарядки

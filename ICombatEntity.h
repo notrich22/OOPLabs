@@ -1,6 +1,6 @@
 #pragma once
 #include <utility>
-
+#include "Entity.h"
 enum class Faction { Player, Enemy, Neutral };
 enum class AttackMode { Melee, Ranged };
 

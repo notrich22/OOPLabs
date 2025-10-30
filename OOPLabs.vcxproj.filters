@@ -54,13 +54,10 @@
     <ClCompile Include="MovementController.cpp">
       <Filter>Исходные файлы\controllers</Filter>
     </ClCompile>
-    <ClCompile Include="SpellController.cpp">
-      <Filter>Исходные файлы\controllers</Filter>
-    </ClCompile>
     <ClCompile Include="CombatController.cpp">
       <Filter>Исходные файлы\controllers</Filter>
     </ClCompile>
-    <ClCompile Include="DirectDamageSpell.cpp">
+    <ClCompile Include="Firebolt.cpp">
       <Filter>Исходные файлы\spells</Filter>
     </ClCompile>
     <ClCompile Include="Enemy.cpp">
@@ -96,6 +93,30 @@
     <ClCompile Include="Relationships.h">
       <Filter>Файлы заголовков\core</Filter>
     </ClCompile>
+    <ClCompile Include="Explosion.cpp">
+      <Filter>Исходные файлы\spells</Filter>
+    </ClCompile>
+    <ClCompile Include="TrapSpell.cpp">
+      <Filter>Исходные файлы\spells</Filter>
+    </ClCompile>
+    <ClCompile Include="TrapEntity.cpp">
+      <Filter>Исходные файлы\entities</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyTower.cpp">
+      <Filter>Исходные файлы\entities</Filter>
+    </ClCompile>
+    <ClCompile Include="TowerController.cpp">
+      <Filter>Исходные файлы\controllers</Filter>
+    </ClCompile>
+    <ClCompile Include="SummonAlly.h">
+      <Filter>Файлы заголовков\spells</Filter>
+    </ClCompile>
+    <ClCompile Include="SummonAlly.cpp">
+      <Filter>Исходные файлы\spells</Filter>
+    </ClCompile>
+    <ClCompile Include="EnhanceSpell.h">
+      <Filter>Файлы заголовков\spells</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Board.h">
@@ -107,7 +128,7 @@
     <ClInclude Include="CombatController.h">
       <Filter>Файлы заголовков\controllers</Filter>
     </ClInclude>
-    <ClInclude Include="DirectDamageSpell.h">
+    <ClInclude Include="Firebolt.h">
       <Filter>Файлы заголовков\spells</Filter>
     </ClInclude>
     <ClInclude Include="Direction.h">
@@ -134,14 +155,8 @@
     <ClInclude Include="PrintController.h">
       <Filter>Файлы заголовков\controllers</Filter>
     </ClInclude>
-    <ClInclude Include="SpellController.h">
-      <Filter>Файлы заголовков\controllers</Filter>
-    </ClInclude>
     <ClInclude Include="SpellHand.h">
       <Filter>Файлы заголовков\spells</Filter>
-    </ClInclude>
-    <ClInclude Include="Trap.h">
-      <Filter>Файлы заголовков\entities</Filter>
     </ClInclude>
     <ClInclude Include="Entity.h">
       <Filter>Файлы заголовков\entities\interfaces</Filter>
@@ -158,13 +173,31 @@
     <ClInclude Include="IAOESpell.h">
       <Filter>Файлы заголовков\spells\interfaces</Filter>
     </ClInclude>
-    <ClInclude Include="ITrap.h">
+    <ClInclude Include="ITrapSpell.h">
       <Filter>Файлы заголовков\spells\interfaces</Filter>
     </ClInclude>
     <ClInclude Include="ISummonSpell.h">
       <Filter>Файлы заголовков\spells\interfaces</Filter>
     </ClInclude>
     <ClInclude Include="CastContext.h">
+      <Filter>Файлы заголовков\spells</Filter>
+    </ClInclude>
+    <ClInclude Include="Explosion.h">
+      <Filter>Файлы заголовков\spells</Filter>
+    </ClInclude>
+    <ClInclude Include="TrapSpell.h">
+      <Filter>Файлы заголовков\spells</Filter>
+    </ClInclude>
+    <ClInclude Include="TrapEntity.h">
+      <Filter>Файлы заголовков\entities</Filter>
+    </ClInclude>
+    <ClInclude Include="TowerController.h">
+      <Filter>Файлы заголовков\controllers</Filter>
+    </ClInclude>
+    <ClInclude Include="Ally.h">
+      <Filter>Файлы заголовков\entities</Filter>
+    </ClInclude>
+    <ClInclude Include="SpellFactory.cpp">
       <Filter>Файлы заголовков\spells</Filter>
     </ClInclude>
   </ItemGroup>

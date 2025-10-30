@@ -32,6 +32,8 @@ public:
     // Работа с клетками
     bool isInside(int x, int y) const;    // проверка, внутри ли координаты
     Cell& getCell(int x, int y);          // получить клетку
+    Cell& getCell(std::pair<int, int> xy);          // получить клетку
+    const Cell& getCell(std::pair<int, int> xy) const;          // получить клетку
     const Cell& getCell(int x, int y) const;
     std::pair<int, int> getRandomFreeCell(std::mt19937& rng) const;
 	bool hasFreeNeighbor(const std::pair<int, int>& pos) const; // проверка достижимости клетки
