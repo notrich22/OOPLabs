@@ -15,7 +15,7 @@ public:
         meleeAttackPower_ = meleeAttackPower;
         rangedAttackPower_ = rangedAttackPower;
     }
-
+    void setHealth(int hp) { health_ = hp; }
     void takeTurn() override;
     char symbol() const noexcept override { return 'E'; }
     std::shared_ptr<Entity> clone() const override {

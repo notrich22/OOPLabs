@@ -40,4 +40,5 @@ public:
 
     // Работа с объектами
     void placeEntity(std::shared_ptr<Entity> entity, int x, int y);  // разместить сущность
+    void clearEntities();
 };

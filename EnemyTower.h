@@ -5,7 +5,6 @@
 #include <memory>
 #include <iostream>
 #include "Config.h"
-#include "Config.h"
 class EnemyTower final : public StaticEntity, public ICombatEntity {
 private:
     int attackRange_;
@@ -28,6 +27,7 @@ public:
     void resetCooldown() noexcept { cooldown_ = Config::TOWER_DEFAULT_COOLDOWN; }
     void tickCooldown() noexcept { if (cooldown_ > 0) --cooldown_; }
 
+    int getRange() const noexcept { return attackRange_; }
 
     int getAttackRange() const noexcept { return attackRange_; }
 

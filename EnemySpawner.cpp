@@ -3,7 +3,6 @@
 
 void EnemySpawner::takeDamage(int dmg) {
 	ICombatEntity::takeDamage(dmg);
-    std::cout << "EnemySpawner took " << dmg << " damage! HP left: " << getHealth() << "\n";
 }
 
 

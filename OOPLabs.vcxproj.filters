@@ -43,12 +43,15 @@
     <Filter Include="Файлы заголовков\entities\interfaces">
       <UniqueIdentifier>{8a7597eb-6ffa-4e40-abda-d1e0c99f3c88}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Исходные файлы\external">
+      <UniqueIdentifier>{41c8aa1e-36b7-4f17-81c9-d6553448311b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Board.cpp">
       <Filter>Исходные файлы\core</Filter>
     </ClCompile>
-    <ClCompile Include="PrintController.cpp">
+    <ClCompile Include="ConsoleRenderer.cpp">
       <Filter>Исходные файлы\controllers</Filter>
     </ClCompile>
     <ClCompile Include="MovementController.cpp">
@@ -117,6 +120,12 @@
     <ClCompile Include="EnhanceSpell.h">
       <Filter>Файлы заголовков\spells</Filter>
     </ClCompile>
+    <ClCompile Include="SaveManager.cpp">
+      <Filter>Исходные файлы\core</Filter>
+    </ClCompile>
+    <ClCompile Include="IObservable.h">
+      <Filter>Файлы заголовков\core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Board.h">
@@ -152,7 +161,7 @@
     <ClInclude Include="Player.h">
       <Filter>Файлы заголовков\entities</Filter>
     </ClInclude>
-    <ClInclude Include="PrintController.h">
+    <ClInclude Include="ConsoleRenderer.h">
       <Filter>Файлы заголовков\controllers</Filter>
     </ClInclude>
     <ClInclude Include="SpellHand.h">
@@ -200,5 +209,31 @@
     <ClInclude Include="SpellFactory.cpp">
       <Filter>Файлы заголовков\spells</Filter>
     </ClInclude>
+    <ClInclude Include="SaveManager.h">
+      <Filter>Файлы заголовков\core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\json.hpp">
+      <Filter>Исходные файлы\external</Filter>
+    </ClInclude>
+    <ClInclude Include="Exceptions.h">
+      <Filter>Файлы заголовков\core</Filter>
+    </ClInclude>
+    <ClInclude Include="Command.h">
+      <Filter>Файлы заголовков\core</Filter>
+    </ClInclude>
+    <ClInclude Include="InputHandler.h">
+      <Filter>Файлы заголовков\core</Filter>
+    </ClInclude>
+    <ClInclude Include="GameManager.h">
+      <Filter>Файлы заголовков\controllers</Filter>
+    </ClInclude>
+    <ClInclude Include="Logger.h">
+      <Filter>Файлы заголовков\core</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="controls.cfg">
+      <Filter>Исходные файлы\external</Filter>
+    </None>
   </ItemGroup>
 </Project>

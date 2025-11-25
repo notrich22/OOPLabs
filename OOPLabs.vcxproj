@@ -103,6 +103,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>$(ProjectDir)\include\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -138,11 +139,13 @@
     <ClCompile Include="ICombatEntity.h" />
     <ClCompile Include="IBuffSpell.h" />
     <ClCompile Include="IDirectDamageSpell.h" />
+    <ClCompile Include="IObservable.h" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MovementController.cpp" />
     <ClCompile Include="Player.cpp" />
-    <ClCompile Include="PrintController.cpp" />
+    <ClCompile Include="ConsoleRenderer.cpp" />
     <ClCompile Include="Relationships.h" />
+    <ClCompile Include="SaveManager.cpp" />
     <ClCompile Include="SummonAlly.cpp" />
     <ClCompile Include="SummonAlly.h" />
     <ClCompile Include="TowerController.cpp" />
@@ -155,7 +158,10 @@
     <ClInclude Include="CastContext.h" />
     <ClInclude Include="Cell.h" />
     <ClInclude Include="CombatController.h" />
+    <ClInclude Include="Command.h" />
     <ClInclude Include="Config.h" />
+    <ClInclude Include="InputHandler.h" />
+    <ClInclude Include="Exceptions.h" />
     <ClInclude Include="Explosion.h" />
     <ClInclude Include="Firebolt.h" />
     <ClInclude Include="Direction.h" />
@@ -163,20 +169,27 @@
     <ClInclude Include="EnemyTower.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="GameManager.h" />
     <ClInclude Include="IAOESpell.h" />
+    <ClInclude Include="include\json.hpp" />
     <ClInclude Include="ISpell.h" />
     <ClInclude Include="ISummonSpell.h" />
     <ClInclude Include="ITrapSpell.h" />
+    <ClInclude Include="Logger.h" />
     <ClInclude Include="MovableEntity.h" />
     <ClInclude Include="MovementController.h" />
     <ClInclude Include="Player.h" />
-    <ClInclude Include="PrintController.h" />
+    <ClInclude Include="ConsoleRenderer.h" />
+    <ClInclude Include="SaveManager.h" />
     <ClInclude Include="SpellFactory.cpp" />
     <ClInclude Include="SpellHand.h" />
     <ClInclude Include="StaticEntity.h" />
     <ClInclude Include="TowerController.h" />
     <ClInclude Include="TrapEntity.h" />
     <ClInclude Include="TrapSpell.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="controls.cfg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

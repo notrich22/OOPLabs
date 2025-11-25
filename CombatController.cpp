@@ -50,17 +50,12 @@ bool CombatController::handleCombat(
     if (!defender->isAlive()) {
         auto [x, y] = defender->getPosition();
         board.getCell(x, y).clearEntity();
-
-        std::cout << "Entity at (" << x << "," << y << ") destroyed!\n";
-
-        // награда игроку только за убийство врага
         if (attacker->faction() == Faction::Player) {
             if (auto player = std::dynamic_pointer_cast<Player>(attacker)) {
                 player->addExperience(Config::DAMAGE_EXPERIENCE_REWARD);
 
                 if (player->getExperience() % 10 == 0) {
                     player->getSpellHand().addRandomSpell();
-                    std::cout << "You gained a new spell card!\n";
                 }
             }
         }

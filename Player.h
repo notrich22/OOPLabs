@@ -24,6 +24,8 @@ public:
         meleeAttackPower_ = meleeDamage;
         rangedAttackPower_ = rangedDamage;
     }
+    void setHealth(int hp) { health_ = hp; }
+    bool isDead() const { return health_ <= 0; }
 
     void takeTurn() override;
     char symbol() const noexcept override { return 'P'; }

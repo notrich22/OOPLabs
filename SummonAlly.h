@@ -14,4 +14,12 @@ public:
 
     bool canCast(const CastContext& ctx) const override;
     bool cast(CastContext& ctx) override;
+
+    void upgrade() override {
+        health_ += 10;
+        damage_ += 2;
+    }
+    std::string getUpgradeInfo() const override {
+        return "Ally stats +10HP/+2DMG (Current: " + std::to_string(health_) + "/" + std::to_string(damage_) + ")";
+    }
 };

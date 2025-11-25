@@ -128,3 +128,9 @@ std::pair<int, int> Board::getRandomFreeCell(std::mt19937& rng) const {
             return { x, y };
     }
 }
+
+void Board::clearEntities() {
+    for (int y = 0; y < height; ++y)
+        for (int x = 0; x < width; ++x)
+            grid[y][x].clearEntity();
+}

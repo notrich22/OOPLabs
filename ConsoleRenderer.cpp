@@ -1,11 +1,11 @@
-﻿#include "PrintController.h"
+﻿#include "ConsoleRenderer.h"
 #include <iostream>
 
 #ifdef _WIN32
 #include <cstdlib>
 #endif
 
-void PrintController::clearScreen() const {
+void ConsoleRenderer::clearScreen() const {
 #ifdef _WIN32
     system("cls");
 #else
@@ -13,12 +13,15 @@ void PrintController::clearScreen() const {
 #endif
 }
 
-void PrintController::renderBoard(const Board& board, int turnCounter, unsigned seed) const {
+void ConsoleRenderer::renderBoard(const Board& board, const Player& player, int turnCounter, unsigned seed) const {
     clearScreen();
     printTitle();
+    std::cout << "-------------------------------------------------\n";
+    std::cout << "CONTROLS: [W/A/S/D] Move  [F] Shoot  [M] Switch Weapon\n";
+    std::cout << "          [C] Spell     [K] Save   [O] Load   [Q] Quit\n";
+    std::cout << "-------------------------------------------------\n";
     printSeed(seed);
     std::cout << "===== TURN " << turnCounter << " =====\n\n";
-
 
     std::cout << "   ";
     for (int x = 0; x < board.getWidth(); ++x)
@@ -45,9 +48,24 @@ void PrintController::renderBoard(const Board& board, int turnCounter, unsigned 
         }
         std::cout << '\n';
     }
+    std::cout << "\nPLAYER STATUS:\n";
+    std::cout << "HP: " << player.getHealth() << " | Mana: " << player.getMana() << "\n";
+    std::cout << "Mode: " << (player.getAttackMode() == AttackMode::Melee ? "MELEE" : "RANGED") << "\n";
+    std::cout << "Damage: " << player.getMeleeAttackPower() << " (Melee) / "
+        << player.getRangedAttackPower() << " (Ranged)\n";
+    std::cout << "\n--- EVENT LOG ---\n";
+    if (messageBuffer.empty()) {
+        std::cout << "(no events)\n";
+    }
+    else {
+        for (const auto& msg : messageBuffer) {
+            std::cout << " > " << msg << "\n";
+        }
+    }
+    std::cout << "-----------------\n";
 }
 
-void PrintController::printTitle() const {
+void ConsoleRenderer::printTitle() const {
     std::cout << R"(
                                                                                 
    mmmm                                 mm      mm                              
@@ -63,11 +81,11 @@ void PrintController::printTitle() const {
 }
 
 
-void PrintController::printSeed(unsigned seed) const {
+void ConsoleRenderer::printSeed(unsigned seed) const {
     std::cout << "Game Seed: " << seed << "\n";
 }
 
-void PrintController::printWin() const {
+void ConsoleRenderer::printWin() const {
     clearScreen();
     std::cout << R"(
                                                                                 
@@ -82,11 +100,7 @@ void PrintController::printWin() const {
 )" << '\n';
 }
 
-void PrintController::printGameOver() const {
+void ConsoleRenderer::printGameOver() const {
     clearScreen();
     std::cout << "You died! Game over.\n";
-}
-
-void PrintController::printMessage(const std::string& msg) const {
-    std::cout << msg << "\n";
 }

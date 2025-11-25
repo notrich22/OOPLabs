@@ -1,5 +1,12 @@
 ﻿#include "Game.h"
+#include "SaveManager.h"
+#include <cstdlib>
+#include <cmath>
+#include <iostream>
+#include <algorithm>
+#include <string>
 
+// Валидация размеров поля
 static std::pair<int, int> validateSize(int width, int height) {
     if (width < Config::MIN_BOARD_SIZE || height < Config::MIN_BOARD_SIZE ||
         width > Config::MAX_BOARD_SIZE || height > Config::MAX_BOARD_SIZE)
@@ -7,97 +14,127 @@ static std::pair<int, int> validateSize(int width, int height) {
     return { width, height };
 }
 
+// Конструктор
 Game::Game(int w, int h, unsigned seed)
     : seed(seed),
     rng(seed),
     board(Board(validateSize(w, h).first, validateSize(w, h).second, rng)),
     combat(board),
     movement(board, combat),
-    printer(),
-    towerController(board){}
-
-
-
-void Game::init() {
-    MAX_ENEMIES = static_cast<int>(board.getHeight() * board.getWidth() * Config::ENEMY_DENSITY_FACTOR);
-
-    // === Игрок ===
-    player = std::make_shared<Player>();
-    spawnEntity(player);
-
-    // стартовые заклинания
-    auto& hand = player->getSpellHand();
-	hand.addRandomSpell();
-
-    // === Настройка генератора случайных позиций ===
-    std::mt19937 rng(seed);
-    std::uniform_int_distribution<int> distX(0, board.getWidth() - 1);
-    std::uniform_int_distribution<int> distY(0, board.getHeight() - 1);
-
-    // === Враги ===
-    for (int i = 0; i < MAX_ENEMIES / 2; ++i) {
-        auto enemy = std::make_shared<Enemy>();
-
-        // ищем пустую клетку для спавна
-        for (int attempt = 0; attempt < 30; ++attempt) {
-            int x = distX(rng);
-            int y = distY(rng);
-            auto& cell = board.getCell(x, y);
-            if (!cell.hasEntity() && cell.getType() == CellType::Normal) {
-                board.placeEntity(enemy, x, y);
-                enemies.push_back(enemy);
-                break;
-            }
-        }
-    }
-
-    // === Спавнеры ===
-    int numSpawners = std::max(1, static_cast<int>(board.getWidth() * board.getHeight() * Config::SPAWNER_DENSITY_FACTOR));
-    for (int i = 0; i < numSpawners; ++i) {
-        auto spawner = std::make_shared<EnemySpawner>();
-        for (int attempt = 0; attempt < 30; ++attempt) {
-            int x = distX(rng);
-            int y = distY(rng);
-            auto& cell = board.getCell(x, y);
-            if (!cell.hasEntity() && cell.getType() == CellType::Normal) {
-                board.placeEntity(spawner, x, y);
-                spawners.push_back(spawner);
-                std::cout << "Spawner placed at (" << x << "," << y << ")\n";
-                break;
-            }
-        }
-    }
-
-    // === Башни ===
-    int numTowers = std::max(1, static_cast<int>(board.getWidth() * board.getHeight() * Config::ENEMYTOWER_DENSITY_FACTOR));
-    for (int i = 0; i < numTowers; ++i) {
-        auto tower = std::make_shared<EnemyTower>(
-            std::make_shared<Firebolt>(5, 3), // слабая версия фаерболта
-            3                                 // радиус атаки
-        );
-
-        for (int attempt = 0; attempt < 30; ++attempt) {
-            int x = distX(rng);
-            int y = distY(rng);
-            auto& cell = board.getCell(x, y);
-            if (!cell.hasEntity() && cell.getType() == CellType::Normal) {
-                towerController.addTower(tower, x, y);
-                std::cout << "Enemy tower placed at (" << x << "," << y << ")\n";
-                break;
-            }
-        }
-    }
-
-    // === Финал инициализации ===
-    isRunning = true;
-    turnCounter = 1;
-
-    std::cout << "Game initialized: "
-        << enemies.size() << " enemies, "
-        << spawners.size() << " spawners, "
-        << numTowers << " towers.\n";
+    towerController(board),
+    currentLevel(1) {
 }
 
+// Инициализация уровня
+void Game::init(std::shared_ptr<Player> existingPlayer) {
+    try {
+        board = Board(board.getWidth(), board.getHeight(), rng);
+
+        enemies.clear();
+        spawners.clear();
+        towerController.clear();
+        allies.clear();
+
+        double hpMult = std::pow(Config::LEVEL_HP_MULTIPLIER, currentLevel - 1);
+        int enemyHP = static_cast<int>(Config::ENEMY_DEFAULT_HEALTH * hpMult);
+        MAX_ENEMIES = static_cast<int>(board.getHeight() * board.getWidth() * Config::ENEMY_DENSITY_FACTOR);
+
+        if (existingPlayer) {
+            player = existingPlayer;
+        }
+        else {
+            player = std::make_shared<Player>();
+            player->getSpellHand().addRandomSpell();
+        }
+        spawnEntity(player);
+
+        std::uniform_int_distribution<int> distX(0, board.getWidth() - 1);
+        std::uniform_int_distribution<int> distY(0, board.getHeight() - 1);
+
+        for (int i = 0; i < MAX_ENEMIES; ++i) {
+            auto enemy = std::make_shared<Enemy>(enemyHP, Config::ENEMY_MELEE_DAMAGE);
+            for (int attempt = 0; attempt < 50; ++attempt) {
+                int x = distX(rng);
+                int y = distY(rng);
+                Cell& cell = board.getCell(x, y);
+                if (!cell.hasEntity() && cell.getType() == CellType::Normal) {
+                    board.placeEntity(enemy, x, y);
+                    enemies.push_back(enemy);
+                    break;
+                }
+            }
+        }
+
+        int numSpawners = std::max(1, static_cast<int>(board.getWidth() * board.getHeight() * Config::SPAWNER_DENSITY_FACTOR));
+        numSpawners += (currentLevel / 3);
+
+        for (int i = 0; i < numSpawners; ++i) {
+            auto spawner = std::make_shared<EnemySpawner>();
+            for (int attempt = 0; attempt < 50; ++attempt) {
+                int x = distX(rng);
+                int y = distY(rng);
+                Cell& cell = board.getCell(x, y);
+                if (!cell.hasEntity() && cell.getType() == CellType::Normal) {
+                    board.placeEntity(spawner, x, y);
+                    spawners.push_back(spawner);
+                    break;
+                }
+            }
+        }
+
+        int numTowers = std::max(1, static_cast<int>(board.getWidth() * board.getHeight() * Config::ENEMYTOWER_DENSITY_FACTOR));
+        numTowers += (currentLevel / 2);
+
+        for (int i = 0; i < numTowers; ++i) {
+            int spellDmg = 5 + (currentLevel * 2);
+            auto tower = std::make_shared<EnemyTower>(
+                std::make_shared<Firebolt>(spellDmg, 3),
+                3
+            );
+            for (int attempt = 0; attempt < 50; ++attempt) {
+                int x = distX(rng);
+                int y = distY(rng);
+                Cell& cell = board.getCell(x, y);
+                if (!cell.hasEntity() && cell.getType() == CellType::Normal) {
+                    towerController.addTower(tower, x, y);
+                    break;
+                }
+            }
+        }
+
+        isRunning = true;
+        turnCounter = 1;
+        notify("Level " + std::to_string(currentLevel) + " initialized.");
+    }
+    catch (const std::exception& e) {
+        throw std::runtime_error(std::string("Init failed: ") + e.what());
+    }
+}
+
+// Переход на следующий уровень
+void Game::nextLevel() {
+    notify("Level Complete! Preparing next level...");
+
+    processLevelUp();
+
+    currentLevel++;
+    player->setHealth(Config::PLAYER_DEFAULT_HEALTH);
+    player->getSpellHand().removeRandomHalf();
+    player->getSpellHand().addRandomSpell();
+
+    int newSize = board.getWidth() + Config::LEVEL_SIZE_INCREMENT;
+    if (newSize > Config::MAX_LEVEL_SIZE) {
+        newSize = Config::MAX_LEVEL_SIZE;
+    }
+
+    seed = std::random_device{}();
+    rng.seed(seed);
+    board = Board(newSize, newSize, rng);
+
+    init(player);
+}
+
+// Размещение сущности
 void Game::spawnEntity(const std::shared_ptr<Entity>& entity) {
     std::pair<int, int> pos;
     for (int attempts = 0; attempts < 1000; ++attempts) {
@@ -107,250 +144,197 @@ void Game::spawnEntity(const std::shared_ptr<Entity>& entity) {
     board.placeEntity(entity, pos.first, pos.second);
 }
 
-void Game::run() {
-    while (isRunning && !checkGameOver()) {
-        printer.renderBoard(board, turnCounter, seed);
+// Обработка команд игрока с детальным логированием
+bool Game::executeCommand(const Command& cmd) {
+    if (!player->isAlive()) return false;
 
-        processPlayerTurn();
-        processAllies();
-        processEnemies();
-        processSpawners();
-        processTowers();
-        system("pause");
-        turnCounter++;
-    }
-}
-void Game::processTowers() {
-    if (towerController.getTowers().empty())
-        return;
+    // Снимок состояния для логирования
+    int xpBefore = player->getExperience();
 
-    towerController.update();
-}
-
-void Game::processPlayerTurn() {
-    std::cout << "Player HP: " << player->getHealth() << "\n";
-    std::cout << "Enter command (w/a/s/d to move, m to switch weapon, "
-        << "f to shoot, c to cast spell, q to quit): ";
-
-    // Пропуск хода после замедления
     if (player->shouldSkipMove()) {
         player->setSkipNextMove(false);
-        std::cout << "You skip this turn!\n";
-        return;
+        notify("Player is slowed and skips turn!");
+        return true;
     }
 
-    char cmd;
-    std::cin >> cmd;  // нормальный ввод без get()
-    cmd = std::tolower(cmd);
+    bool turnUsed = false;
 
-    // --- Смена оружия ---
-    if (cmd == 'm') {
-        player->switchMode();
-        std::cout << "Attack mode switched to "
-            << (player->getAttackMode() == AttackMode::Melee ? "MELEE\n" : "RANGED\n");
-        player->setSkipNextMove(true);
-        return;
-    }
+    switch (cmd.type) {
+    case CommandType::Move:
+        if (cmd.dir != Direction::None) {
+            auto [dx, dy] = delta(cmd.dir);
 
-    // --- Выход ---
-    if (cmd == 'q') {
-        isRunning = false;
-        return;
-    }
+            auto [oldX, oldY] = player->getPosition();
+            int hpBefore = player->getHealth();
 
-    // --- Каст заклинания ---
-    if (cmd == 'c') {
-        auto& hand = player->getSpellHand();
-        if (hand.empty()) {
-            std::cout << "You have no spells!\n";
-            return;
-        }
-
-        auto spellNames = hand.getSpellNames();
-        std::cout << "\nAvailable spells:\n";
-        for (std::size_t i = 0; i < spellNames.size(); ++i)
-            std::cout << i + 1 << ") " << spellNames[i] << '\n';
-
-        std::cout << "Choose spell number: ";
-        std::size_t index;
-        if (!(std::cin >> index)) {
-            std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            std::cout << "Invalid input.\n";
-            return;
-        }
-
-        if (index == 0 || index > spellNames.size()) {
-            std::cout << "Invalid choice.\n";
-            return;
-        }
-
-        auto spell = hand.getSpell(index - 1);
-        if (!spell) return;
-
-        std::string spellName = spell->name();
-
-        // === FIREBOLT ===
-        if (spellName == "Firebolt") {
-            std::cout << "Direction (w/a/s/d): ";
-            char key;
-            std::cin >> key;
-            auto direction = keyToDir(std::tolower(key));
-
-            if (!direction) {
-                std::cout << "Invalid direction.\n";
-                return;
+            // Предварительная проверка цели для ближнего боя
+            int targetX = oldX + dx;
+            int targetY = oldY + dy;
+            std::shared_ptr<ICombatEntity> meleeTarget = nullptr;
+            if (board.isInside(targetX, targetY)) {
+                auto& cell = board.getCell(targetX, targetY);
+                if (cell.isOccupied()) {
+                    meleeTarget = std::dynamic_pointer_cast<ICombatEntity>(cell.getEntity());
+                }
             }
+            int targetHpBefore = (meleeTarget) ? meleeTarget->getHealth() : 0;
 
-            int maxRange = 3 + player->getEnhancementState().rangeBonus();
-            auto target = combat.findTargetInDirection(player, *direction, maxRange);
+            // Выполнение движения
+            if (movement.move(*player, dx, dy)) {
+                turnUsed = true;
+                auto [newX, newY] = player->getPosition();
 
-            if (!target) {
-                std::cout << "No enemy in that direction!\n";
-                return;
-            }
+                if (newX != oldX || newY != oldY) {
+                    notify("Player moved to (" + std::to_string(newX) + ", " + std::to_string(newY) + ")");
 
-            auto combatTarget = std::dynamic_pointer_cast<ICombatEntity>(target);
-            CastContext ctx{
-                *player,
-                board,
-                combatTarget,
-                combatTarget->getPosition(),
-                player->getEnhancementState()
-            };
-
-            if (spell->canCast(ctx)) spell->cast(ctx);
-            else std::cout << "Cannot cast " << spellName << " right now.\n";
-        }
-
-        // === EXPLOSION ===
-        else if (spellName == "Explosion") {
-            int x, y;
-            std::cout << "Enter center (x y): ";
-            if (!(std::cin >> x >> y)) {
-                std::cin.clear();
-                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                std::cout << "Invalid coordinates.\n";
-                return;
-            }
-
-            CastContext ctx{
-                *player, board, {}, std::make_pair(x, y),
-                player->getEnhancementState()
-            };
-
-            if (spell->canCast(ctx)) {
-                spell->cast(ctx);
-                std::cout << "Explosion cast complete!\n";
-            }
-            else {
-                std::cout << "Cannot cast Explosion at (" << x << ", " << y << ").\n";
-            }
-        }
-
-        // === TRAP ===
-        else if (spellName == "TrapSpell") {
-            int x, y;
-            std::cout << "Enter trap position (x y): ";
-            if (!(std::cin >> x >> y)) {
-                std::cin.clear();
-                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                std::cout << "Invalid coordinates.\n";
-                return;
-            }
-
-            CastContext ctx{
-                *player, board, {}, std::make_pair(x, y),
-                player->getEnhancementState()
-            };
-
-            if (spell->canCast(ctx) && spell->cast(ctx))
-                std::cout << "Trap placed at (" << x << ", " << y << ") successfully!\n";
-            else
-                std::cout << "Failed to place trap at (" << x << ", " << y << ").\n";
-        }
-
-        // === SUMMON ===
-        else if (spellName == "SummonAlly") {
-            CastContext ctx{
-                *player, board, {}, player->getPosition(),
-                player->getEnhancementState()
-            };
-
-            if (spell->canCast(ctx) && spell->cast(ctx)) {
-                std::cout << "Ally summoned successfully!\n";
-                auto [px, py] = player->getPosition();
-                for (Direction dir : cardinalDirs) {
-                    auto [dx, dy] = delta(dir);
-                    int nx = px + dx, ny = py + dy;
-                    if (!board.isInside(nx, ny)) continue;
-                    auto entity = board.getCell(nx, ny).getEntity();
-                    if (entity && entity->symbol() == 'A') {
-                        if (auto ally = std::dynamic_pointer_cast<Ally>(entity))
-                            allies.push_back(ally);
+                    int dmgTaken = hpBefore - player->getHealth();
+                    if (dmgTaken > 0) {
+                        notify(" > Stepped on TRAP! Took " + std::to_string(dmgTaken) + " damage.");
+                    }
+                }
+                else if (meleeTarget) {
+                    int dmgDealt = targetHpBefore - meleeTarget->getHealth();
+                    notify("Player hit Enemy for " + std::to_string(dmgDealt) + " damage!");
+                    if (!meleeTarget->isAlive()) {
+                        notify(" > Enemy destroyed!");
                     }
                 }
             }
             else {
-                std::cout << "Cannot cast SummonAlly right now.\n";
+                notify("Way blocked.");
             }
         }
+        break;
 
-        // === ENHANCE ===
-        else if (spellName == "EnhanceSpell") {
+    case CommandType::AttackMelee:
+        player->setAttackMode(AttackMode::Melee);
+        notify("Switched to Melee mode.");
+        turnUsed = true;
+        break;
+
+    case CommandType::SwitchWeapon:
+        player->switchMode();
+        notify("Switched weapon mode.");
+        player->setSkipNextMove(true);
+        turnUsed = true;
+        break;
+
+    case CommandType::AttackRanged:
+        if (player->getAttackMode() == AttackMode::Melee) {
+            notify("Cannot shoot in melee mode!");
+        }
+        else if (cmd.dir != Direction::None) {
+            auto target = combat.findTargetInDirection(player, cmd.dir, player->getAttackRange());
+            auto combatTarget = std::dynamic_pointer_cast<ICombatEntity>(target);
+
+            if (combatTarget) {
+                int hpBefore = combatTarget->getHealth();
+                combat.handleCombat(player, combatTarget);
+                int dmg = hpBefore - combatTarget->getHealth();
+
+                notify("Player shot target for " + std::to_string(dmg) + " damage!");
+                if (!combatTarget->isAlive()) {
+                    notify(" > Target eliminated!");
+                }
+            }
+            else {
+                notify("Player fired a shot but missed!");
+            }
+            turnUsed = true;
+        }
+        break;
+
+    case CommandType::CastSpell: {
+        auto& hand = player->getSpellHand();
+        auto spell = hand.getSpell(cmd.spellIndex);
+        if (spell) {
+            std::shared_ptr<ICombatEntity> targetEntity = nullptr;
+            if (cmd.dir != Direction::None) {
+                int maxRange = 3 + player->getEnhancementState().rangeBonus();
+                auto t = combat.findTargetInDirection(player, cmd.dir, maxRange);
+                targetEntity = std::dynamic_pointer_cast<ICombatEntity>(t);
+            }
+
             CastContext ctx{
-                *player, board, {}, player->getPosition(),
+                *player, board, targetEntity,
+                cmd.target,
                 player->getEnhancementState()
             };
 
             if (spell->canCast(ctx)) {
-                spell->cast(ctx);
-                std::cout << "Enhancement applied!\n";
+                if (spell->cast(ctx)) {
+                    hand.removeSpell(cmd.spellIndex);
+                    notify("Player cast " + spell->name() + "!");
+                    turnUsed = true;
+                }
             }
             else {
-                std::cout << "Cannot cast EnhanceSpell right now.\n";
+                notify("Failed to cast " + spell->name());
             }
         }
-
-        return;
+        break;
     }
 
-    // --- Дальняя атака ---
-    if (cmd == 'f') {
-        if (player->getAttackMode() == AttackMode::Melee) {
-            std::cout << "You can't shoot in melee mode!\n";
-            return;
+    case CommandType::SaveGame:
+        try {
+            SaveManager::saveGame(*this, "save.json");
+            notify("Game saved successfully.");
         }
-
-        std::cout << "Attack direction (w/a/s/d): ";
-        char dirKey;
-        std::cin >> dirKey;
-        auto dirOpt = keyToDir(std::tolower(dirKey));
-
-        if (!dirOpt) {
-            std::cout << "Invalid direction\n";
-            return;
+        catch (const std::exception& e) {
+            notify(std::string("Save failed: ") + e.what());
         }
+        break;
 
-        auto target = combat.findTargetInDirection(player, *dirOpt, player->getAttackRange());
-        if (target)
-            combat.handleCombat(player, std::dynamic_pointer_cast<ICombatEntity>(target));
-        else
-            std::cout << "You missed!\n";
-        return;
+    case CommandType::LoadGame:
+        try {
+            SaveManager::loadGame(*this, "save.json");
+            notify("Game loaded successfully.");
+        }
+        catch (const std::exception& e) {
+            notify(std::string("Load failed: ") + e.what());
+        }
+        break;
+
+    case CommandType::Quit:
+        isRunning = false;
+        break;
     }
 
-    // --- Движение ---
-    if (auto dirOpt = keyToDir(cmd)) {
-        auto [dx, dy] = delta(*dirOpt);
-        movement.move(*player, dx, dy);
+    // Логирование полученного опыта
+    int xpGained = player->getExperience() - xpBefore;
+    if (xpGained > 0) {
+        notify(" > Gained " + std::to_string(xpGained) + " XP! (Total: " + std::to_string(player->getExperience()) + ")");
     }
-    else {
-        std::cout << "Unknown command\n";
+
+    return turnUsed;
+}
+
+// Обновление мира (AI)
+void Game::updateWorld() {
+    processAllies();
+    processEnemies();
+    processSpawners();
+    processTowers();
+
+    turnCounter++;
+
+    if (player->isDead()) {
+        notify("Player died.");
+        isRunning = false;
+    }
+    else if (enemies.empty() && spawners.empty()) {
+        if (currentLevel >= Config::MAX_LEVEL) {
+            notify("YOU HAVE CONQUERED ALL LEVELS!");
+            isRunning = false;
+        }
+        else {
+            notify("Victory! Level cleared.");
+            nextLevel();
+        }
     }
 }
 
-
+// Логика союзников
 void Game::processAllies() {
     if (allies.empty() || enemies.empty()) return;
 
@@ -359,19 +343,15 @@ void Game::processAllies() {
 
         if (ally->shouldSkipMove()) {
             ally->setSkipNextMove(false);
-            std::cout << "Ally skips this turn!\n";
             continue;
         }
 
-        // === ищем ближайшего врага ===
         std::shared_ptr<Enemy> nearestEnemy = nullptr;
-        int minDist = std::numeric_limits<int>::max();
-
+        int minDist = 10000;
         auto [ax, ay] = ally->getPosition();
 
         for (auto& enemy : enemies) {
             if (!enemy || !enemy->isAlive()) continue;
-
             auto [ex, ey] = enemy->getPosition();
             int dist = std::abs(ax - ex) + std::abs(ay - ey);
             if (dist < minDist) {
@@ -381,54 +361,36 @@ void Game::processAllies() {
         }
 
         bool moved = false;
-
-        // === если враг найден и он близко — идём к нему ===
         if (nearestEnemy && minDist <= 5) {
             auto [ex, ey] = nearestEnemy->getPosition();
             int dx = ex - ax;
             int dy = ey - ay;
-
-            if (std::abs(dx) > std::abs(dy))
-                dx = (dx > 0) ? 1 : -1, dy = 0;
-            else
-                dy = (dy > 0) ? 1 : -1, dx = 0;
+            if (std::abs(dx) > std::abs(dy)) dx = (dx > 0) ? 1 : -1, dy = 0;
+            else dy = (dy > 0) ? 1 : -1, dx = 0;
 
             moved = movement.move(*ally, dx, dy);
-
-            // если не смог сдвинуться (препятствие) — пробуем случайно
             if (!moved) {
-                std::array<Direction, 4> shuffled = cardinalDirs;
-                std::shuffle(shuffled.begin(), shuffled.end(), rng);
-                for (Direction dir : shuffled) {
+                std::array<Direction, 4> shuf = cardinalDirs;
+                std::shuffle(shuf.begin(), shuf.end(), rng);
+                for (Direction dir : shuf) {
                     auto [adx, ady] = delta(dir);
-                    if (movement.move(*ally, adx, ady)) {
-                        moved = true;
-                        break;
-                    }
+                    if (movement.move(*ally, adx, ady)) break;
                 }
             }
         }
         else {
-            // === иначе — двигаемся случайно ===
-            std::array<Direction, 4> shuffled = cardinalDirs;
-            std::shuffle(shuffled.begin(), shuffled.end(), rng);
-            for (Direction dir : shuffled) {
+            std::array<Direction, 4> shuf = cardinalDirs;
+            std::shuffle(shuf.begin(), shuf.end(), rng);
+            for (Direction dir : shuf) {
                 auto [adx, ady] = delta(dir);
-                if (movement.move(*ally, adx, ady)) {
-                    moved = true;
-                    break;
-                }
+                if (movement.move(*ally, adx, ady)) break;
             }
         }
     }
 
-    // удаляем мёртвых союзников
-    allies.erase(
-        std::remove_if(allies.begin(), allies.end(),
-            [](auto& a) { return !a->isAlive(); }),
-        allies.end());
+    allies.erase(std::remove_if(allies.begin(), allies.end(),
+        [](auto& a) { return !a->isAlive(); }), allies.end());
 }
-
 
 void Game::processEnemies() {
     auto [px, py] = player->getPosition();
@@ -438,7 +400,8 @@ void Game::processEnemies() {
 
         if (enemy->shouldSkipMove()) {
             enemy->setSkipNextMove(false);
-            std::cout << "Enemy skips this turn!\n";
+            auto [ex, ey] = enemy->getPosition();
+            notify("Enemy at (" + std::to_string(ex) + "," + std::to_string(ey) + ") is slowed and skips turn.");
             continue;
         }
 
@@ -447,105 +410,186 @@ void Game::processEnemies() {
         int dy = py - ey;
         int dist = std::abs(dx) + std::abs(dy);
 
-        bool moved = false;
+        auto [oldX, oldY] = enemy->getPosition();
+        int playerHpBefore = player->getHealth();
 
-        // --- если игрок близко, идём к нему ---
+        bool moved = false;
         if (dist <= 3) {
-            // выбираем ось, где смещение больше
-            if (std::abs(dx) > std::abs(dy))
-                dx = (dx > 0) ? 1 : -1, dy = 0;
-            else
-                dy = (dy > 0) ? 1 : -1, dx = 0;
+            if (std::abs(dx) > std::abs(dy)) dx = (dx > 0) ? 1 : -1, dy = 0;
+            else dy = (dy > 0) ? 1 : -1, dx = 0;
 
             moved = movement.move(*enemy, dx, dy);
-
-            // если не смог сдвинуться (препятствие) — попробуем другой вариант
             if (!moved) {
-                std::array<Direction, 4> shuffled = cardinalDirs;
-                std::shuffle(shuffled.begin(), shuffled.end(), rng);
-                for (Direction dir : shuffled) {
+                std::array<Direction, 4> shuf = cardinalDirs;
+                std::shuffle(shuf.begin(), shuf.end(), rng);
+                for (Direction dir : shuf) {
                     auto [adx, ady] = delta(dir);
-                    if (movement.move(*enemy, adx, ady)) {
-                        moved = true;
-                        break;
-                    }
+                    if (movement.move(*enemy, adx, ady)) break;
                 }
             }
         }
-        // --- иначе — старое поведение (рандом) ---
         else {
-            std::array<Direction, 4> shuffled = cardinalDirs;
-            std::shuffle(shuffled.begin(), shuffled.end(), rng);
-            for (Direction dir : shuffled) {
+            std::array<Direction, 4> shuf = cardinalDirs;
+            std::shuffle(shuf.begin(), shuf.end(), rng);
+            for (Direction dir : shuf) {
                 auto [adx, ady] = delta(dir);
-                if (movement.move(*enemy, adx, ady)) {
-                    moved = true;
-                    break;
-                }
+                if (movement.move(*enemy, adx, ady)) break;
+            }
+        }
+
+
+        int dmgDealt = playerHpBefore - player->getHealth();
+        if (dmgDealt > 0) {
+            notify("Enemy attacked Player for " + std::to_string(dmgDealt) + " damage!");
+        }
+        else {
+            auto [newX, newY] = enemy->getPosition();
+            if (newX != oldX || newY != oldY) {
+                notify("Enemy moved from (" + std::to_string(oldX) + "," + std::to_string(oldY) +
+                    ") to (" + std::to_string(newX) + "," + std::to_string(newY) + ")");
             }
         }
     }
 
-    enemies.erase(
-        std::remove_if(enemies.begin(), enemies.end(),
-            [](const std::shared_ptr<Enemy>& e) { return !e->isAlive(); }),
-        enemies.end());
+    enemies.erase(std::remove_if(enemies.begin(), enemies.end(),
+        [](const std::shared_ptr<Enemy>& e) { return !e->isAlive(); }), enemies.end());
 }
 
-
+// Логика спавнеров
 void Game::processSpawners() {
     for (auto& spawner : spawners) {
-        if (!spawner->isAlive())
-            continue;
+        if (!spawner->isAlive()) continue;
 
         spawner->takeTurn();
 
-        if (static_cast<int>(enemies.size()) >= MAX_ENEMIES)
-            continue;
-
-        if (!spawner->readyToSpawn())
-            continue;
+        if (static_cast<int>(enemies.size()) >= MAX_ENEMIES) continue;
+        if (!spawner->readyToSpawn()) continue;
 
         auto [sx, sy] = spawner->getPosition();
-        std::array<Direction, 4> shuffled = cardinalDirs;
-        std::shuffle(shuffled.begin(), shuffled.end(), rng);
+        std::array<Direction, 4> shuf = cardinalDirs;
+        std::shuffle(shuf.begin(), shuf.end(), rng);
 
-        for (Direction dir : shuffled) {
+        bool spawned = false;
+
+        for (Direction dir : shuf) {
             auto [dx, dy] = delta(dir);
             int nx = sx + dx;
             int ny = sy + dy;
 
-            if (!board.isInside(nx, ny))
-                continue;
-
+            if (!board.isInside(nx, ny)) continue;
             Cell& cell = board.getCell(nx, ny);
-            if (cell.isOccupied() || cell.getType() == CellType::Wall)
-                continue;
+            if (cell.isOccupied() || cell.getType() == CellType::Wall) continue;
 
-            auto newEnemy = std::make_shared<Enemy>(40, 10);
+            double hpMult = std::pow(Config::LEVEL_HP_MULTIPLIER, currentLevel - 1);
+            int enemyHP = static_cast<int>(Config::ENEMY_DEFAULT_HEALTH * hpMult);
+
+            auto newEnemy = std::make_shared<Enemy>(enemyHP, Config::ENEMY_MELEE_DAMAGE);
             enemies.push_back(newEnemy);
             board.placeEntity(newEnemy, nx, ny);
-            std::cout << "Spawner created enemy at (" << nx << ", " << ny << ")\n";
 
             spawner->resetCounter();
+            spawned = true;
+
+            notify("Spawner at (" + std::to_string(sx) + "," + std::to_string(sy) +
+                ") created new Enemy at (" + std::to_string(nx) + "," + std::to_string(ny) + ")!");
             break;
         }
+
+        if (!spawned && spawner->readyToSpawn()) {
+            notify("Spawner at (" + std::to_string(sx) + "," + std::to_string(sy) + ") is blocked!");
+        }
+    }
+
+    spawners.erase(std::remove_if(spawners.begin(), spawners.end(),
+        [](const std::shared_ptr<EnemySpawner>& s) { return !s->isAlive(); }),
+        spawners.end());
+}
+
+// Логика башен
+void Game::processTowers() {
+    if (towerController.getTowers().empty()) return;
+
+    int hpBefore = player->getHealth();
+
+    towerController.update();
+
+    int dmgTaken = hpBefore - player->getHealth();
+
+    if (dmgTaken > 0) {
+        notify("Towers attacked Player! Taken " + std::to_string(dmgTaken) + " damage.");
     }
 }
 
+// Проверка конца игры
 bool Game::checkGameOver() const {
-    if (!player->isAlive()) {
-        printer.printGameOver();
-        return true;
-    }
-
-    bool anyEnemiesAlive = std::any_of(enemies.begin(), enemies.end(),
-        [](const auto& e) { return e->isAlive(); });
-
-    if (!anyEnemiesAlive) {
-        printer.printWin();
-        return true;
-    }
-
+    if (!player->isAlive()) return true;
     return false;
+}
+
+// Меню прокачки
+void Game::processLevelUp() {
+    std::cout << "\n=== LEVEL COMPLETED! ===\n";
+    std::cout << "Choose your reward:\n";
+    std::cout << "1. Increase Player Melee Damage (+5)\n";
+    std::cout << "2. Increase Player Ranged Damage (+3)\n";
+
+    bool canUpgradeSpell = !player->getSpellHand().empty();
+    if (canUpgradeSpell) {
+        std::cout << "3. Upgrade an existing Spell card\n";
+    }
+    else {
+        std::cout << "3. (Unavailable - No spells in hand)\n";
+    }
+
+    std::cout << "Enter choice: ";
+    int choice;
+    while (!(std::cin >> choice) || choice < 1 || choice > 3) {
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        std::cout << "Invalid choice. Try again: ";
+    }
+
+    if (choice == 1) {
+        int newDmg = player->getMeleeAttackPower() + 5;
+        player->setAttackPowers(newDmg, player->getRangedAttackPower());
+        std::cout << "Melee damage increased to " << newDmg << "!\n";
+    }
+    else if (choice == 2) {
+        int newDmg = player->getRangedAttackPower() + 3;
+        player->setAttackPowers(player->getMeleeAttackPower(), newDmg);
+        std::cout << "Ranged damage increased to " << newDmg << "!\n";
+    }
+    else if (choice == 3) {
+        if (!canUpgradeSpell) {
+            std::cout << "No spells to upgrade! You gain +10 HP instead.\n";
+            player->setHealth(player->getHealth() + 10);
+        }
+        else {
+            auto& hand = player->getSpellHand();
+            auto spells = hand.getSpellNames();
+
+            std::cout << "\nSelect spell to upgrade:\n";
+            for (size_t i = 0; i < spells.size(); ++i) {
+                auto spell = hand.getSpell(i);
+                std::cout << (i + 1) << ". " << spells[i]
+                    << " -> " << spell->getUpgradeInfo() << "\n";
+            }
+
+            int spellIndex;
+            std::cout << "Number: ";
+            while (!(std::cin >> spellIndex) || spellIndex < 1 || spellIndex > static_cast<int>(spells.size())) {
+                std::cin.clear();
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                std::cout << "Invalid number. Try again: ";
+            }
+
+            auto selectedSpell = hand.getSpell(spellIndex - 1);
+            selectedSpell->upgrade();
+            std::cout << selectedSpell->name() << " has been upgraded!\n";
+        }
+    }
+
+    std::cout << "Press Enter to continue to next level...";
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    std::cin.get();
 }

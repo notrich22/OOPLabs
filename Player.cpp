@@ -5,16 +5,13 @@
 
 void Player::takeDamage(int dmg){
 	ICombatEntity::takeDamage(dmg);
-    std::cout << "Player took " << dmg << " damage! HP left: " << getHealth() << "\n";
 }
 
 void Player::addExperience(unsigned int exp) {
     experience_ += exp;
-    std::cout << "Player gained " << exp << " XP! Total: " << experience_ << "\n";
 }
 
 void Player::takeTurn() {
-    std::cout << "Player turn.\n";
 }
 
 void Player::switchMode() {

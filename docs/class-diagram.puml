@@ -1,211 +1,68 @@
 @startuml
+skinparam linetype ortho
 skinparam classAttributeIconSize 0
-skinparam backgroundColor white
-skinparam classBackgroundColor #fdfdfd
-skinparam classBorderColor #333
-skinparam arrowColor #555
-skinparam classFontColor #111
-skinparam shadowing false
+skinparam shadowing true
 
-' ========= БАЗОВЫЕ ИНТЕРФЕЙСЫ (ЛАБА 2) =========
-interface ISpell {
-  +name(): string
-  +canCast(ctx: CastContext): bool
-  +cast(ctx: CastContext): bool
+' === ГРУППА: УПРАВЛЕНИЕ ИГРОЙ (ОСНОВА ЛАБЫ 3) ===
+package "Game Loop & Persistence" {
+    class Game {
+        - int currentLevel
+        - bool isRunning
+        - Board board
+        - Player player
+        __
+        + init()
+        + run() : void
+        + nextLevel() : void
+        - processLevelUp() : void
+        - checkGameOver() : bool
+    }
+
+    class SaveManager {
+        + {static} saveGame(game : Game, file : string)
+        + {static} loadGame(game : Game, file : string)
+        - {static} computeStableHash(data : string) : size_t
+    }
 }
 
-interface IDirectDamageSpell {
-  +baseDamage(): int
-  +range(): int
-}
-IDirectDamageSpell -|> ISpell
-
-interface IAOESpell {
-  +areaSize(): int
-  +damagePerCell(): int
-}
-IAOESpell -|> ISpell
-
-interface ITrapSpell {
-  +trapDamage(): int
-}
-ITrapSpell -|> ISpell
-
-interface ISummonSpell {
-  +summonHealth(): int
-  +summonDamage(): int
-}
-ISummonSpell -|> ISpell
-
-interface IBuffSpell {
-  +stacksGranted(): int
-}
-IBuffSpell -|> ISpell
-
-' ========= БОЙ/СУЩНОСТИ-ОСНОВЫ =========
-interface ICombatEntity {
-  +getPosition(): pair<int,int>
-  +faction(): Faction
-  +attack(target: ICombatEntity)
-  +takeDamage(amount: int)
-  +isAlive(): bool
+' === ГРУППА: ОБРАБОТКА ОШИБОК (НОВОЕ В ЛАБЕ 3) ===
+package "Exception Handling" {
+    class GameException
+    class FileException extends GameException
+    class SaveDataException extends GameException
+    class CorruptedSaveException extends GameException
 }
 
-class Entity {
-  #pair<int,int> position
-  +takeTurn()
-  +symbol(): char
-}
-class StaticEntity { 
-    +takeTurn() = 0 
-}
-class MovableEntity {
-     +setSkipNextMove(bool) 
-}
+' === ГРУППА: ПРОГРЕССИЯ И МАГИЯ (ИЗМЕНЕНИЯ ЛАБЫ 3) ===
+package "Progression System" {
+    class Player {
+        - SpellHand spellHand
+        - int health
+        + setHealth(int)
+    }
 
-StaticEntity -|> Entity
-MovableEntity -|> Entity
+    class SpellHand {
+        + removeRandomHalf() : void
+        + addSpell(spell)
+    }
 
-' ========= СЛУЖЕБНЫЕ СТРУКТУРЫ =========
-class EnhancementState {
-  +int stacks
-  +bool empty()
-  +void clear()
-  +int rangeBonus()
-  +int areaBonus()
-  +int trapBonus()
-  +int summonBonus()
-}
+    interface ISpell {
+        + {abstract} upgrade() : void
+        + {abstract} getUpgradeInfo() : string
+    }
+    }
 
-class CastContext {
-  +Entity& caster
-  +Board& board
-  +weak_ptr<ICombatEntity> target
-  +optional<pair<int,int>> cell
-  +EnhancementState& enhancement
-}
+' === СВЯЗИ ===
 
-' ========= РЕАЛИЗАЦИИ ЗАКЛИНАНИЙ =========
-class Firebolt {
-  -int damage_
-  -int range_
-  +bool canCast(CastContext)
-  +bool cast(CastContext)
-}
-Firebolt -|> IDirectDamageSpell
+' Game управляет процессом
+Game *-- Player
+Game ..> SaveManager : <<friend>> \nuses for save/load
 
-class Explosion {
-  -int damage_
-  -int area_
-  +bool canCast(CastContext)
-  +bool cast(CastContext)
-}
-Explosion -|> IAOESpell
+' SaveManager использует исключения
+SaveManager ..> GameException : throws
 
-class TrapSpell {
-  -int damage_
-  +string name()
-  +int trapDamage()
-  +bool canCast(CastContext)
-  +bool cast(CastContext)
-}
-TrapSpell -|> ITrapSpell
-
-class SummonAlly {
-  -int health_
-  -int damage_
-  +bool canCast(CastContext)
-  +bool cast(CastContext)
-}
-SummonAlly -|> ISummonSpell
-
-class EnhanceSpell {
-  -int stacks_
-  +int stacksGranted()
-  +bool canCast(CastContext)
-  +bool cast(CastContext)
-}
-EnhanceSpell -|> IBuffSpell
-
-' ========= СУЩНОСТИ, С КОТОРЫМИ РАБОТАЮТ СПЕЛЛЫ =========
-class TrapEntity {
-  -int damage_
-  +bool isBlocking(): bool
-  +char symbol(): char
-  +void takeTurn()
-  +int damage(): int
-  +void trigger(victim: ICombatEntity&, board: Board&)
-}
-TrapEntity -|> StaticEntity
-
-class Ally {
-  +Ally(int hp=30, int dmg=10)
-  +takeTurn()
-  +takeDamage(int)
-}
-Ally -|> MovableEntity
-Ally -|> ICombatEntity
-
-class EnemyTower {
-  -shared_ptr<IDirectDamageSpell> spell_
-  -int attackRange_
-  -int cooldown_
-  -const int cooldownTime_
-  +isReady(): bool
-  +tickCooldown(): void
-  +resetCooldown(): void
-  +getAttackRange(): int
-  +getSpell(): shared_ptr<IDirectDamageSpell>
-}
-EnemyTower -|> StaticEntity
-EnemyTower -|> ICombatEntity
-
-class TowerController {
-  -Board& board_
-  -vector<shared_ptr<EnemyTower>> towers_
-  +addTower(shared_ptr<EnemyTower>, int, int)
-  +update()
-}
-
-' ========= РУКА И ФАБРИКА =========
-class SpellFactory {
-  +static createRandom(): shared_ptr<ISpell>
-}
-
-class SpellHand {
-  -vector<shared_ptr<ISpell>> spells_
-  -size_t capacity_
-  +bool addSpell(shared_ptr<ISpell>)
-  +void addRandomSpell()
-  +shared_ptr<ISpell> getSpell(size_t)
-  +vector<string> getSpellNames()
-  +bool empty(): bool
-  +size_t capacity(): size_t
-  +size_t size(): size_t
-}
-SpellHand --> ISpell
-SpellHand --> SpellFactory
-
-' ========= СВЯЗИ/ЗАВИСИМОСТИ (ИСПОЛЬЗОВАНИЕ) =========
-' контекст и усиления
-EnhanceSpell --> EnhancementState
-Firebolt --> CastContext
-Explosion --> CastContext
-TrapSpell --> CastContext
-SummonAlly --> CastContext
-EnhanceSpell --> CastContext
-
-' призыв создаёт союзника
-SummonAlly --> Ally
-
-' ловушка: спелл создаёт сущность-ловушку; триггер бьёт ICombatEntity и трогает Board
-TrapSpell --> TrapEntity
-TrapEntity ..> ICombatEntity
-TrapEntity ..> Board
-
-' башня и контроллер
-EnemyTower --> IDirectDamageSpell
-TowerController --> EnemyTower
-TowerController ..> Board
+' Связи игрока с магией
+Player *-- SpellHand
+SpellHand o-- ISpell
 
 @enduml

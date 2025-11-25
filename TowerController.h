@@ -14,5 +14,7 @@ public:
 
     void addTower(const std::shared_ptr<EnemyTower>& tower, int x, int y);
     void update();
-	std::vector<std::shared_ptr<EnemyTower>> getTowers() const { return towers_; }
+    const std::vector<std::shared_ptr<EnemyTower>>& getTowers() const { return towers_; }
+    void clear();
+
 };

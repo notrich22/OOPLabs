@@ -2,12 +2,10 @@
 #include <vector>
 #include <memory>
 #include <string>
-#include <optional>
 #include "ISpell.h"
-#include <random>
-#include <functional> 
 #include "SpellFactory.cpp"
-
+#include <algorithm>
+#include <random>
 // Класс SpellHand — "рука" игрока, в которой хранятся доступные заклинания
 class SpellHand {
 private:
@@ -31,8 +29,21 @@ public:
         if (index >= spells_.size()) return nullptr;
         return spells_[index];
     }
+    // Удаление половины карт с руки
+    void removeRandomHalf() {
+        if (spells_.empty()) return;
 
-    // Удалить спелл по индексу (например, если одноразовый)
+        size_t keepCount = spells_.size() / 2;
+
+        if (spells_.size() == 1) return;
+
+        static std::random_device rd;
+        static std::mt19937 g(rd());
+        std::shuffle(spells_.begin(), spells_.end(), g);
+
+        spells_.resize(keepCount);
+    }
+    // Удалить спелл по индексу
     void removeSpell(std::size_t index) {
         if (index < spells_.size())
             spells_.erase(spells_.begin() + static_cast<std::ptrdiff_t>(index));
@@ -46,7 +57,6 @@ public:
 
     void addRandomSpell() {
         if (spells_.size() >= capacity_) {
-            std::cout << "Cannot add: hand is full.\n";
             return;
         }
         addSpell(SpellFactory::createRandom());
@@ -64,4 +74,14 @@ public:
         }
         return names;
     }
+    // Получить весь список заклинаний
+    const std::vector<std::shared_ptr<ISpell>>& getSpells() const noexcept {
+        return spells_;
+    }
+
+    // Очистить все заклинания
+    void clear() noexcept {
+        spells_.clear();
+    }
+
 };

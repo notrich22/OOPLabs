@@ -17,4 +17,11 @@ public:
 
     bool canCast(const CastContext& ctx) const override;
     bool cast(CastContext& ctx) override;
+
+    void upgrade() override {
+        damage_ += 5;
+    }
+    std::string getUpgradeInfo() const override {
+        return "Increase Damage by 5 (Current: " + std::to_string(damage_) + ")";
+    }
 };

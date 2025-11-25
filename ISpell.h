@@ -4,8 +4,6 @@
 #include <optional>
 #include "CastContext.h"
 
-
-
 // Базовый интерфейс заклинания
 class ISpell {
 public:
@@ -21,4 +19,10 @@ public:
 
     // По умолчанию карточка одноразовая
     virtual bool consumable() const { return true; }
+
+    // Применяет улучшение к заклинанию 
+    virtual void upgrade() = 0;
+
+    // Возвращает текст описания улучшения
+    virtual std::string getUpgradeInfo() const = 0;
 };

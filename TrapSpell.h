@@ -15,4 +15,11 @@ public:
 
     bool canCast(const CastContext& ctx) const override;
     bool cast(CastContext& ctx) override;
+
+    void upgrade() override {
+        damage_ += 10;
+    }
+    std::string getUpgradeInfo() const override {
+        return "Increase Trap Damage by 10 (Current: " + std::to_string(damage_) + ")";
+    }
 };

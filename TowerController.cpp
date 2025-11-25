@@ -59,3 +59,12 @@ void TowerController::update() {
         }
     }
 }
+
+void TowerController::clear() {
+    for (auto& tower : towers_) {
+        if (!tower) continue;
+        auto [x, y] = tower->getPosition();
+        board_.getCell(x, y).clearEntity();
+    }
+    towers_.clear();
+}

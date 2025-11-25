@@ -5,7 +5,7 @@
 
 class Explosion final : public IAOESpell {
     int damage_;
-    int area_; // сторона области (например, 2)
+    int area_;
 public:
     Explosion(int damage = 15, int area = 2)
         : damage_(damage), area_(area) {
@@ -17,4 +17,11 @@ public:
 
     bool canCast(const CastContext& ctx) const override;
     bool cast(CastContext& ctx) override;
+
+    void upgrade() override {
+        damage_ += 5;
+    }
+    std::string getUpgradeInfo() const override {
+        return "Increase Explosion Damage by 5 (Current: " + std::to_string(damage_) + ")";
+    }
 };

@@ -1,0 +1,812 @@
+
+=== NEW SESSION ===
+[21:19:08] Level 1 initialized.
+
+=== NEW SESSION ===
+[21:19:13] Level 1 initialized.
+[21:19:20] Player moved.
+[21:19:21] Player moved.
+[21:19:21] Player moved.
+[21:19:22] Player moved.
+[21:19:22] Spawner created enemy at (2,11)
+[21:19:22] Player moved.
+[21:19:22] Spawner created enemy at (2,0)
+[21:19:23] Player moved.
+[21:19:23] Player moved.
+[21:19:24] Player moved.
+[21:19:24] Player moved.
+[21:19:25] Player moved.
+[21:19:25] Player moved.
+[21:19:25] Spawner created enemy at (2,11)
+[21:19:25] Player moved.
+[21:19:26] Player moved.
+[21:19:26] Spawner created enemy at (2,0)
+[21:19:26] Player moved.
+[21:19:26] Player moved.
+[21:19:26] Player moved.
+[21:19:27] Player moved.
+[21:19:27] Player moved.
+[21:19:28] Player moved.
+[21:19:28] Player moved.
+[21:19:28] Spawner created enemy at (3,12)
+[21:19:29] Player moved.
+[21:19:29] Player moved.
+[21:19:29] Spawner created enemy at (2,0)
+
+=== NEW SESSION ===
+[21:23:51] Level 1 initialized.
+[21:23:54] Player moved.
+[21:23:54] Player bumped into wall.
+[21:23:54] Player bumped into wall.
+[21:23:55] Player bumped into wall.
+[21:23:55] Player moved.
+[21:23:55] Player bumped into wall.
+
+=== NEW SESSION ===
+[21:24:05] Level 1 initialized.
+
+=== NEW SESSION ===
+[21:26:00] Level 1 initialized.
+[21:26:02] Player moved.
+[21:26:02] Player moved.
+[21:26:03] Player moved.
+[21:26:03] Player moved.
+[21:26:04] Player moved.
+[21:26:04] Spawner created enemy at (2,5)
+[21:26:04] Player moved.
+[21:26:05] Player moved.
+[21:26:05] Spawner created enemy at (2,9)
+[21:26:06] Player moved.
+[21:26:07] Player moved.
+
+=== NEW SESSION ===
+[21:28:33] Level 1 initialized.
+[21:28:37] Player moved.
+[21:28:38] Player moved.
+[21:28:38] Player moved.
+[21:28:39] Player moved.
+[21:28:39] Player is slowed and skips turn!
+[21:28:40] Player moved.
+[21:28:40] Player moved.
+[21:28:40] Spawner created enemy at (2,5)
+[21:28:41] Player moved.
+[21:28:41] Player is slowed and skips turn!
+
+=== NEW SESSION ===
+[21:34:06] Level 1 initialized.
+[21:34:08] Player moved.
+[21:34:10] Player is slowed and skips turn!
+[21:34:11] Player moved.
+[21:34:11] Player moved.
+[21:34:11] Spawner created enemy at (5,9)
+[21:34:13] Player moved.
+[21:34:13] Player moved.
+[21:34:13] Spawner created enemy at (0,1)
+[21:34:13] Player moved.
+[21:34:14] Player moved.
+[21:34:14] Spawner created enemy at (7,9)
+[21:34:15] Player moved.
+[21:34:15] Player moved.
+[21:34:16] Player moved.
+[21:34:16] Player is slowed and skips turn!
+[21:34:24] Player moved.
+[21:34:25] Player bumped into wall.
+[21:34:25] Player bumped into wall.
+[21:34:26] Player bumped into wall.
+[21:34:26] Player bumped into wall.
+[21:34:27] Player moved.
+[21:34:29] Player is slowed and skips turn!
+[21:34:30] Player moved.
+[21:34:31] Player moved.
+[21:34:32] Player moved.
+[21:34:32] Player is slowed and skips turn!
+[21:34:34] Player moved.
+[21:34:34] Player moved.
+[21:34:35] Player moved.
+[21:34:35] Player moved.
+[21:34:35] Player moved.
+[21:34:36] Player moved.
+[21:34:36] Player moved.
+[21:34:37] Player moved.
+[21:34:38] Player moved.
+[21:34:38] Player moved.
+[21:34:39] Player moved.
+[21:34:39] Spawner created enemy at (5,9)
+[21:34:40] Player moved.
+[21:34:40] Player moved.
+[21:34:40] Player moved.
+[21:34:41] Player moved.
+[21:34:42] Player bumped into wall.
+[21:34:42] Player moved.
+[21:34:42] Player moved.
+[21:34:43] Player moved.
+[21:34:43] Spawner created enemy at (7,9)
+[21:34:43] Player moved.
+[21:34:45] Player moved.
+[21:34:46] Player moved.
+[21:34:48] Switched weapon mode.
+
+=== NEW SESSION ===
+[21:42:21] Level 1 initialized.
+[21:42:31] Game saved successfully.
+[21:42:34] Player moved to (8, 5)
+[21:42:35] Player moved to (9, 5)
+[21:42:35] Player bumped into wall.
+[21:42:36] Player moved to (9, 5)
+[21:42:36] Player moved to (9, 5)
+[21:42:36] Spawner created enemy at (2,5)
+[21:42:37] Player moved to (9, 5)
+[21:42:37] Player moved to (9, 5)
+[21:42:37] Spawner created enemy at (1,8)
+[21:42:38] Player moved to (9, 6)
+[21:42:39] Player moved to (8, 6)
+[21:42:39] Player moved to (7, 6)
+[21:42:40] Player moved to (6, 6)
+[21:42:40] Player moved to (6, 6)
+[21:42:40] Player moved to (6, 6)
+[21:42:40] Spawner created enemy at (2,5)
+[21:42:41] Player moved to (6, 5)
+[21:42:42] Player moved to (6, 4)
+[21:42:42] Player moved to (5, 4)
+[21:42:42] Player moved to (4, 4)
+[21:42:42] Player moved to (4, 4)
+[21:42:43] Player moved to (4, 4)
+[21:42:43] Spawner created enemy at (4,5)
+[21:42:43] Player moved to (4, 4)
+[21:42:44] Player moved to (4, 4)
+[21:42:44] Spawner created enemy at (2,7)
+[21:42:44] Player moved to (3, 4)
+[21:42:44] Player moved to (3, 4)
+[21:42:45] Player moved to (3, 4)
+[21:42:45] Player moved to (3, 4)
+[21:42:45] Player moved to (3, 4)
+[21:42:45] Player moved to (3, 4)
+[21:42:46] Player moved to (3, 5)
+[21:42:46] Player moved to (3, 6)
+[21:42:46] Player moved to (3, 6)
+[21:42:47] Player moved to (3, 6)
+[21:42:47] Spawner created enemy at (3,8)
+[21:42:47] Player moved to (3, 6)
+[21:42:49] Player moved to (3, 6)
+[21:42:49] Player moved to (3, 6)
+[21:42:50] Player moved to (3, 7)
+[21:42:50] Spawner created enemy at (3,8)
+[21:42:50] Player moved to (3, 7)
+[21:42:51] Player moved to (3, 7)
+[21:42:51] Player moved to (3, 8)
+[21:42:52] Player moved to (3, 8)
+[21:42:52] Spawner created enemy at (2,9)
+[21:42:52] Player moved to (3, 8)
+[21:42:53] Player moved to (3, 8)
+[21:42:54] Player moved to (3, 8)
+[21:42:55] Player moved to (3, 8)
+[21:42:56] Player moved to (3, 8)
+[21:42:57] Player moved to (3, 8)
+[21:42:57] Player moved to (3, 8)
+[21:42:58] Player moved to (3, 8)
+[21:42:58] Player moved to (3, 8)
+[21:42:59] Player moved to (3, 8)
+[21:42:59] Player moved to (3, 8)
+[21:43:00] Player moved to (3, 8)
+[21:43:01] Player moved to (3, 8)
+[21:43:01] Player moved to (4, 8)
+[21:43:02] Player moved to (5, 8)
+[21:43:02] Player moved to (6, 8)
+[21:43:03] Player moved to (7, 8)
+[21:43:04] Player moved to (8, 8)
+[21:43:04] Player moved to (9, 8)
+[21:43:05] Player moved to (9, 8)
+[21:43:05] Player moved to (9, 8)
+[21:43:05] Player moved to (9, 8)
+[21:43:06] Player moved to (9, 9)
+[21:43:07] Player moved to (8, 9)
+[21:43:07] Player moved to (7, 9)
+[21:43:07] Player moved to (6, 9)
+[21:43:07] Player moved to (5, 9)
+[21:43:08] Player moved to (4, 9)
+[21:43:08] Player moved to (3, 9)
+[21:43:08] Player moved to (2, 9)
+[21:43:09] Player moved to (2, 8)
+[21:43:09] Player moved to (2, 7)
+[21:43:09] Player moved to (2, 6)
+[21:43:10] Player moved to (2, 5)
+
+=== NEW SESSION ===
+[21:46:05] Player moved to (7, 6)
+[21:46:05] Player moved to (6, 6)
+[21:46:06] Player moved to (5, 6)
+[21:46:07] Player moved to (4, 6)
+[21:46:07] Player moved to (3, 6)
+[21:46:08] Player moved to (3, 6)
+[21:46:08] Player moved to (3, 6)
+[21:46:09] Player moved to (3, 6)
+[21:46:09] Player moved to (3, 6)
+[21:46:09] Player moved to (3, 6)
+[21:46:10] Player moved to (3, 6)
+[21:46:11] Player moved to (3, 6)
+[21:46:11] Player moved to (3, 6)
+[21:46:11] Player moved to (3, 6)
+[21:46:12] Player moved to (4, 6)
+[21:46:12] Player moved to (4, 6)
+[21:46:12] Player moved to (4, 6)
+[21:46:13] Player moved to (4, 6)
+[21:46:13] Player moved to (4, 6)
+[21:46:14] Player moved to (3, 6)
+[21:46:14] Player moved to (2, 6)
+[21:46:14] Player moved to (1, 6)
+[21:46:15] Player moved to (2, 6)
+[21:46:15] Player moved to (2, 7)
+[21:46:16] Player moved to (2, 7)
+[21:46:16] Player moved to (2, 7)
+[21:46:16] Player moved to (2, 7)
+[21:46:17] Player moved to (2, 7)
+[21:46:17] Player moved to (2, 7)
+[21:46:18] Player moved to (2, 6)
+[21:46:18] Player moved to (2, 5)
+[21:46:18] Player moved to (2, 4)
+[21:46:19] Player moved to (2, 3)
+[21:46:19] Player moved to (3, 3)
+[21:46:20] Player moved to (3, 4)
+[21:46:20] Player moved to (4, 4)
+[21:46:21] Player moved to (5, 4)
+[21:46:21] Player moved to (5, 3)
+[21:46:21] Player moved to (5, 3)
+[21:46:22] Player moved to (5, 3)
+[21:46:22] Victory! Level cleared.
+[21:46:22] Level Complete! Preparing next level...
+[21:46:35] Level 2 initialized.
+[21:46:52] Player cast SummonAlly
+[21:47:06] Player moved to (9, 0)
+[21:47:07] Player moved to (8, 0)
+[21:47:07] Player moved to (7, 0)
+[21:47:08] Player moved to (7, 1)
+[21:47:08] Player moved to (7, 2)
+[21:47:08] Player moved to (6, 2)
+[21:47:09] Player moved to (5, 2)
+[21:47:09] Player moved to (5, 3)
+[21:47:10] Player moved to (4, 3)
+[21:47:10] Player moved to (3, 3)
+[21:47:11] Player moved to (3, 3)
+[21:47:11] Player moved to (3, 3)
+[21:47:11] Player moved to (3, 3)
+[21:47:11] Spawner created enemy at (8,8)
+[21:47:12] Player moved to (3, 3)
+[21:47:12] Player moved to (3, 3)
+[21:47:13] Player moved to (3, 3)
+[21:47:13] Spawner created enemy at (8,11)
+[21:47:13] Player moved to (3, 4)
+[21:47:14] Player moved to (3, 4)
+[21:47:14] Player moved to (3, 4)
+[21:47:14] Player moved to (3, 4)
+[21:47:14] Spawner created enemy at (8,10)
+[21:47:15] Player moved to (4, 4)
+[21:47:15] Player moved to (5, 4)
+[21:47:15] Player moved to (5, 5)
+[21:47:16] Player moved to (5, 5)
+[21:47:16] Player moved to (5, 5)
+[21:47:16] Player moved to (5, 5)
+[21:47:17] Player moved to (5, 5)
+[21:47:17] Player moved to (5, 5)
+[21:47:17] Player moved to (5, 5)
+[21:47:17] Spawner created enemy at (9,9)
+[21:47:17] Player moved to (5, 5)
+[21:47:18] Player moved to (5, 5)
+[21:47:18] Spawner created enemy at (9,10)
+[21:47:18] Player moved to (5, 6)
+[21:47:18] Player moved to (5, 7)
+[21:47:19] Player is slowed and skips turn!
+[21:47:19] Player moved to (5, 7)
+[21:47:20] Player moved to (5, 7)
+[21:47:20] Spawner created enemy at (8,10)
+[21:47:20] Player moved to (5, 8)
+[21:47:21] Player moved to (5, 8)
+[21:47:21] Player moved to (5, 8)
+[21:47:21] Spawner created enemy at (9,10)
+[21:47:21] Player moved to (5, 8)
+[21:47:22] Player moved to (5, 8)
+[21:47:22] Player moved to (5, 8)
+[21:47:22] Spawner created enemy at (7,9)
+[21:47:22] Player moved to (5, 8)
+[21:47:23] Player moved to (5, 8)
+[21:47:23] Spawner created enemy at (8,11)
+[21:47:23] Player moved to (5, 8)
+[21:47:23] Player moved to (5, 8)
+[21:47:23] Spawner created enemy at (7,9)
+[21:47:24] Player moved to (6, 8)
+[21:47:24] Player is slowed and skips turn!
+[21:47:24] Player moved to (6, 8)
+[21:47:24] Player moved to (6, 8)
+[21:47:24] Spawner created enemy at (8,8)
+[21:47:25] Player moved to (6, 8)
+[21:47:25] Player moved to (6, 8)
+[21:47:25] Spawner created enemy at (10,11)
+[21:47:25] Player moved to (6, 8)
+[21:47:26] Player moved to (6, 8)
+[21:47:26] Spawner created enemy at (8,8)
+[21:47:26] Player moved to (6, 8)
+[21:47:26] Player moved to (6, 8)
+[21:47:26] Spawner created enemy at (8,11)
+[21:47:27] Player moved to (6, 8)
+[21:47:27] Player moved to (6, 9)
+[21:47:28] Player moved to (6, 10)
+[21:47:28] Player moved to (6, 11)
+[21:47:28] Player is slowed and skips turn!
+[21:47:29] Player bumped into wall.
+[21:47:29] Player bumped into wall.
+[21:47:29] Player moved to (6, 10)
+[21:47:30] Player moved to (6, 9)
+[21:47:30] Player moved to (6, 9)
+[21:47:30] Spawner created enemy at (8,8)
+[21:47:30] Player moved to (6, 9)
+[21:47:30] Player moved to (6, 9)
+[21:47:30] Spawner created enemy at (9,10)
+[21:47:31] Player moved to (6, 9)
+[21:47:31] Player moved to (6, 9)
+[21:47:31] Spawner created enemy at (8,8)
+[21:47:31] Player moved to (6, 9)
+[21:47:31] Player moved to (6, 9)
+[21:47:31] Spawner created enemy at (8,11)
+[21:47:31] Player moved to (6, 9)
+[21:47:31] Player moved to (6, 9)
+[21:47:31] Spawner created enemy at (8,8)
+[21:47:33] Player moved to (6, 9)
+[21:47:33] Player moved to (6, 9)
+[21:47:33] Spawner created enemy at (8,11)
+[21:47:33] Player moved to (6, 9)
+[21:47:33] Player moved to (6, 9)
+[21:47:33] Spawner created enemy at (8,8)
+[21:47:33] Player moved to (6, 9)
+[21:47:33] Player moved to (6, 9)
+[21:47:33] Spawner created enemy at (9,10)
+[21:47:33] Player moved to (6, 9)
+[21:47:33] Player moved to (6, 9)
+[21:47:33] Spawner created enemy at (8,10)
+[21:47:33] Player moved to (6, 9)
+[21:47:33] Player moved to (6, 9)
+[21:47:33] Spawner created enemy at (10,11)
+[21:47:33] Player moved to (6, 9)
+[21:47:33] Player moved to (6, 9)
+[21:47:33] Spawner created enemy at (7,9)
+[21:47:34] Player moved to (6, 9)
+[21:47:34] Player moved to (6, 9)
+[21:47:34] Spawner created enemy at (9,10)
+[21:47:34] Player moved to (7, 9)
+[21:47:34] Player moved to (7, 9)
+[21:47:35] Player moved to (7, 9)
+[21:47:35] Player moved to (7, 9)
+[21:47:36] Player moved to (7, 9)
+[21:47:36] Player moved to (7, 9)
+[21:47:36] Player moved to (7, 9)
+[21:47:36] Player moved to (7, 9)
+[21:47:36] Spawner created enemy at (8,11)
+[21:47:36] Player moved to (7, 9)
+[21:47:36] Player moved to (7, 9)
+[21:47:37] Player moved to (7, 9)
+[21:47:37] Player moved to (7, 9)
+[21:47:37] Spawner created enemy at (8,11)
+[21:47:38] Player moved to (7, 9)
+[21:47:38] Player moved to (7, 9)
+[21:47:38] Player moved to (8, 9)
+[21:47:40] Player moved to (9, 9)
+[21:47:40] Spawner created enemy at (10,11)
+[21:47:40] Player moved to (9, 9)
+[21:47:40] Player died.
+
+=== NEW SESSION ===
+[21:49:15] Player moved to (8, 5)
+[21:49:16] Player moved to (9, 5)
+[21:49:17] Player attacked enemy at (9, 5)
+[21:49:18] Player attacked enemy at (9, 5)
+[21:49:18] Player moved to (8, 5)
+[21:49:18] Player moved to (7, 5)
+[21:49:19] Player moved to (6, 5)
+[21:49:19] Player moved to (5, 5)
+[21:49:20] Player moved to (4, 5)
+[21:49:20] Player attacked enemy at (4, 5)
+[21:49:21] Player attacked enemy at (4, 5)
+[21:49:21] Player attacked enemy at (4, 5)
+[21:49:21] Player attacked enemy at (4, 5)
+[21:49:22] Player attacked enemy at (4, 5)
+[21:49:22] Player attacked enemy at (4, 5)
+[21:49:22] Player attacked enemy at (4, 5)
+[21:49:23] Player moved to (3, 5)
+[21:49:23] Player moved to (2, 5)
+[21:49:23] Player moved to (2, 6)
+[21:49:24] Player moved to (2, 5)
+[21:49:24] Player moved to (2, 4)
+[21:49:24] Player moved to (2, 3)
+[21:49:25] Player moved to (1, 3)
+[21:49:25] Player moved to (0, 3)
+[21:49:26] Player moved to (0, 4)
+[21:49:26] Player moved to (0, 5)
+[21:49:26] Player moved to (0, 6)
+[21:49:27] Player moved to (0, 7)
+[21:49:27] Player moved to (0, 8)
+[21:49:28] Player attacked enemy at (0, 8)
+[21:49:28] Player attacked enemy at (0, 8)
+[21:49:29] Player attacked enemy at (0, 8)
+[21:49:30] Player moved to (0, 7)
+[21:49:31] Player attacked enemy at (0, 7)
+[21:49:31] Player moved to (0, 6)
+[21:49:32] Player moved to (1, 6)
+[21:49:32] Player moved to (2, 6)
+[21:49:33] Player moved to (3, 6)
+[21:49:34] Player moved to (4, 6)
+[21:49:34] Player attacked enemy at (4, 6)
+[21:49:36] Player attacked enemy at (4, 6)
+[21:49:36] Player moved to (4, 5)
+[21:49:38] Player moved to (5, 5)
+[21:49:38] Player moved to (5, 6)
+[21:49:39] Player moved to (4, 6)
+[21:49:39] Player moved to (4, 7)
+[21:49:40] Player moved to (4, 8)
+[21:49:40] Player moved to (4, 9)
+[21:49:40] Player moved to (5, 9)
+[21:49:41] Player moved to (6, 9)
+[21:49:41] Player moved to (7, 9)
+[21:49:42] Player moved to (8, 9)
+[21:49:42] Player attacked enemy at (8, 9)
+[21:49:43] Player attacked enemy at (8, 9)
+[21:49:43] Player attacked enemy at (8, 9)
+[21:49:44] Player moved to (9, 9)
+[21:49:44] Way blocked (Wall).
+[21:49:44] Player moved to (8, 9)
+[21:49:45] Player moved to (7, 9)
+[21:49:45] Player moved to (6, 9)
+[21:49:45] Player moved to (5, 9)
+[21:49:46] Player moved to (4, 9)
+[21:49:46] Player moved to (3, 9)
+[21:49:46] Player moved to (2, 9)
+[21:49:47] Player moved to (1, 9)
+[21:49:48] Player moved to (2, 9)
+[21:49:48] Player attacked enemy at (2, 9)
+[21:49:49] Player attacked enemy at (2, 9)
+[21:49:49] Player attacked enemy at (2, 9)
+[21:49:49] Player attacked enemy at (2, 9)
+[21:49:50] Player attacked enemy at (2, 9)
+[21:49:50] Victory! Level cleared.
+[21:49:50] Level Complete! Preparing next level...
+
+=== NEW SESSION ===
+[21:52:53] Player moved to (8, 5)
+[21:52:53] Player attacked enemy at (8, 5)
+[21:52:54] Player attacked enemy at (8, 5)
+[21:52:54] Player moved to (8, 4)
+[21:52:54] Player moved to (8, 3)
+[21:52:55] Player is slowed and skips turn!
+[21:52:55] Player moved to (8, 2)
+[21:52:56] Player attacked enemy at (8, 2)
+[21:52:56] Player attacked enemy at (8, 2)
+[21:52:57] Player moved to (8, 1)
+[21:52:57] Player is slowed and skips turn!
+[21:52:57] Player attacked enemy at (8, 1)
+[21:52:58] Player attacked enemy at (8, 1)
+[21:52:58] Player moved to (8, 2)
+[21:52:58] Player moved to (8, 3)
+[21:52:59] Player is slowed and skips turn!
+[21:52:59] Player moved to (8, 4)
+[21:53:00] Player attacked enemy at (8, 4)
+[21:53:01] Player attacked enemy at (8, 4)
+[21:53:02] Player moved to (7, 4)
+[21:53:02] Player moved to (6, 4)
+[21:53:03] Player moved to (5, 4)
+[21:53:03] Player moved to (4, 4)
+[21:53:03] Player moved to (3, 4)
+[21:53:04] Player attacked enemy at (3, 4)
+[21:53:04] Player attacked enemy at (3, 4)
+[21:53:04] Player attacked enemy at (3, 4)
+[21:53:05] Player attacked enemy at (3, 4)
+[21:53:05] Player attacked enemy at (3, 4)
+[21:53:05] Player moved to (3, 5)
+[21:53:06] Player moved to (3, 6)
+[21:53:06] Player moved to (3, 7)
+[21:53:06] Player moved to (3, 8)
+[21:53:07] Player attacked enemy at (3, 8)
+[21:53:07] Player attacked enemy at (3, 8)
+[21:53:07] Player attacked enemy at (3, 8)
+[21:53:08] Player attacked enemy at (3, 8)
+[21:53:08] Player attacked enemy at (3, 8)
+[21:53:09] Player attacked enemy at (3, 8)
+[21:53:09] Player attacked enemy at (3, 8)
+[21:53:09] Victory! Level cleared.
+[21:53:09] Level Complete! Preparing next level...
+
+=== NEW SESSION ===
+[22:03:41] Player moved to (6, 5)
+[22:03:41] Player moved to (5, 5)
+[22:03:42] Player moved to (5, 6)
+[22:03:43] Player moved to (6, 6)
+[22:03:43] Player moved to (7, 6)
+[22:03:48] Cannot shoot in melee mode!
+[22:03:52] Cannot shoot in melee mode!
+[22:03:53] Cannot shoot in melee mode!
+[22:03:55] Cannot shoot in melee mode!
+[22:03:56] Player moved to (8, 6)
+[22:03:57] Player moved to (9, 6)
+[22:03:58] Way blocked.
+[22:03:59] Way blocked.
+[22:04:00] Way blocked.
+[22:04:01] Way blocked.
+[22:04:01] Player moved to (9, 5)
+[22:04:02] Player hit Enemy for 20 damage!
+[22:04:02] Player hit Enemy for 20 damage!
+[22:04:02]  > Enemy destroyed!
+[22:04:02]  > Gained 10 XP! (Total: 10)
+[22:04:06] Player hit Enemy for 20 damage!
+[22:04:07] Player hit Enemy for 20 damage!
+[22:04:07]  > Enemy destroyed!
+[22:04:07]  > Gained 10 XP! (Total: 20)
+[22:04:09] Player hit Enemy for 20 damage!
+[22:04:10] Player hit Enemy for 20 damage!
+[22:04:10]  > Enemy destroyed!
+[22:04:10]  > Gained 10 XP! (Total: 30)
+[22:04:10] Player moved to (8, 5)
+[22:04:11] Player moved to (7, 5)
+[22:04:11] Player moved to (6, 5)
+[22:04:12] Player moved to (5, 5)
+[22:04:12] Player moved to (4, 5)
+[22:04:12] Player hit Enemy for 20 damage!
+[22:04:13] Player hit Enemy for 20 damage!
+[22:04:13] Player hit Enemy for 20 damage!
+[22:04:14] Player hit Enemy for 20 damage!
+[22:04:15] Player hit Enemy for 20 damage!
+[22:04:15]  > Enemy destroyed!
+[22:04:15]  > Gained 10 XP! (Total: 40)
+[22:04:15] Player hit Enemy for 20 damage!
+[22:04:16] Player hit Enemy for 20 damage!
+[22:04:16]  > Enemy destroyed!
+[22:04:16]  > Gained 10 XP! (Total: 50)
+[22:04:16] Player moved to (3, 5)
+[22:04:17] Player moved to (2, 5)
+[22:04:17] Player moved to (1, 5)
+[22:04:18] Player hit Enemy for 20 damage!
+[22:04:19] Player hit Enemy for 20 damage!
+[22:04:19]  > Enemy destroyed!
+[22:04:19]  > Gained 10 XP! (Total: 60)
+[22:04:20] Player moved to (2, 5)
+[22:04:20] Player moved to (2, 6)
+[22:04:21] Player moved to (2, 7)
+[22:04:21] Player hit Enemy for 20 damage!
+[22:04:21] Player hit Enemy for 20 damage!
+[22:04:22] Player hit Enemy for 20 damage!
+[22:04:22] Player hit Enemy for 20 damage!
+[22:04:23] Player hit Enemy for 20 damage!
+[22:04:23]  > Enemy destroyed!
+[22:04:23]  > Gained 10 XP! (Total: 70)
+[22:04:23] Victory! Level cleared.
+[22:04:23] Level Complete! Preparing next level...
+[22:04:43] Level 2 initialized.
+[22:04:46] Player hit Enemy for 20 damage!
+[22:04:46] Player hit Enemy for 20 damage!
+[22:04:47] Player hit Enemy for 8 damage!
+[22:04:47]  > Enemy destroyed!
+[22:04:47]  > Gained 10 XP! (Total: 80)
+[22:04:47] Player moved to (6, 6)
+[22:04:47] Spawner created enemy at (3,3)
+[22:04:47] Player moved to (7, 6)
+[22:04:48] Player moved to (8, 6)
+[22:04:48] Player hit Enemy for 20 damage!
+[22:04:48] Player hit Enemy for 20 damage!
+[22:04:49] Player hit Enemy for 8 damage!
+[22:04:49]  > Enemy destroyed!
+[22:04:49]  > Gained 10 XP! (Total: 90)
+[22:04:49] Spawner created enemy at (4,4)
+[22:04:49] Player moved to (9, 6)
+[22:04:50] Player moved to (10, 6)
+[22:04:50] Player hit Enemy for 20 damage!
+[22:04:51] Player hit Enemy for 20 damage!
+[22:04:51] Player hit Enemy for 8 damage!
+[22:04:51]  > Enemy destroyed!
+[22:04:51]  > Gained 10 XP! (Total: 100)
+[22:04:51] Spawner created enemy at (5,3)
+[22:04:51] Player hit Enemy for 20 damage!
+[22:04:51] Player hit Enemy for 20 damage!
+[22:04:52] Player hit Enemy for 8 damage!
+[22:04:52]  > Enemy destroyed!
+[22:04:52]  > Gained 10 XP! (Total: 110)
+[22:04:52] Spawner created enemy at (7,9)
+[22:04:52] Player moved to (9, 6)
+[22:04:53] Player moved to (9, 7)
+[22:04:53] Player moved to (8, 7)
+[22:04:53] Player moved to (8, 8)
+[22:04:54] Player hit Enemy for 20 damage!
+[22:04:54] Player hit Enemy for 20 damage!
+[22:04:54] Player hit Enemy for 20 damage!
+[22:04:55] Player hit Enemy for 20 damage!
+[22:04:55] Player hit Enemy for 20 damage!
+[22:04:55]  > Enemy destroyed!
+[22:04:55]  > Gained 10 XP! (Total: 120)
+[22:04:55] Player hit Enemy for 20 damage!
+[22:04:56] Player hit Enemy for 20 damage!
+[22:04:56] Player hit Enemy for 8 damage!
+[22:04:56]  > Enemy destroyed!
+[22:04:56]  > Gained 10 XP! (Total: 130)
+[22:04:56] Spawner created enemy at (4,2)
+[22:04:56] Player hit Enemy for 20 damage!
+[22:04:57] Player hit Enemy for 20 damage!
+[22:04:57]  > Enemy destroyed!
+[22:04:57]  > Gained 10 XP! (Total: 140)
+[22:04:57] Player moved to (7, 8)
+[22:04:57] Way blocked.
+[22:04:58] Player hit Enemy for 20 damage!
+[22:04:58] Spawner created enemy at (5,3)
+[22:04:58] Player hit Enemy for 20 damage!
+[22:04:58] Player hit Enemy for 8 damage!
+[22:04:58]  > Enemy destroyed!
+[22:04:58]  > Gained 10 XP! (Total: 150)
+[22:04:59] Player moved to (8, 8)
+
+=== NEW SESSION ===
+[22:06:03] Level 1 initialized.
+[22:06:04] Player moved to (6, 5)
+[22:06:04] Player moved to (5, 5)
+[22:06:05] Player moved to (4, 5)
+[22:06:05] Player hit Enemy for 20 damage!
+[22:06:06] Player hit Enemy for 20 damage!
+[22:06:06] Player moved to (4, 4)
+[22:06:07] Player moved to (4, 3)
+[22:06:07] Player moved to (4, 2)
+[22:06:07] Player moved to (4, 1)
+[22:06:08] Player moved to (3, 1)
+[22:06:08] Player moved to (2, 1)
+[22:06:09] Player moved to (1, 1)
+[22:06:09] Player moved to (0, 1)
+[22:06:10] Player hit Enemy for 20 damage!
+[22:06:10] Player hit Enemy for 20 damage!
+[22:06:10]  > Enemy destroyed!
+[22:06:10]  > Gained 10 XP! (Total: 10)
+[22:06:10] Spawner created enemy at (2,5)
+[22:06:11] Player moved to (1, 1)
+[22:06:11] Player moved to (2, 1)
+[22:06:12] Player moved to (3, 1)
+[22:06:12] Player hit Enemy for 20 damage!
+[22:06:13] Player hit Enemy for 20 damage!
+[22:06:13]  > Enemy destroyed!
+[22:06:13]  > Gained 10 XP! (Total: 20)
+[22:06:13] Spawner created enemy at (3,6)
+[22:06:13] Player hit Enemy for 20 damage!
+[22:06:13] Player hit Enemy for 20 damage!
+[22:06:13]  > Enemy destroyed!
+[22:06:13]  > Gained 10 XP! (Total: 30)
+[22:06:13] Spawner created enemy at (2,9)
+[22:06:14] Player hit Enemy for 20 damage!
+[22:06:14] Player hit Enemy for 20 damage!
+[22:06:14]  > Enemy destroyed!
+[22:06:14]  > Gained 10 XP! (Total: 40)
+[22:06:14] Spawner created enemy at (4,5)
+[22:06:15] Player moved to (2, 1)
+[22:06:16] Player hit Enemy for 20 damage!
+[22:06:17] Player hit Enemy for 20 damage!
+[22:06:17]  > Enemy destroyed!
+[22:06:17]  > Gained 10 XP! (Total: 50)
+[22:06:17] Spawner created enemy at (2,7)
+[22:06:18] Player moved to (1, 1)
+[22:06:18] Player moved to (1, 2)
+[22:06:19] Player moved to (1, 3)
+[22:06:19] Player hit Enemy for 20 damage!
+[22:06:19] Player hit Enemy for 20 damage!
+[22:06:19]  > Enemy destroyed!
+[22:06:19]  > Gained 10 XP! (Total: 60)
+[22:06:19] Spawner created enemy at (2,5)
+[22:06:20] Player moved to (1, 4)
+[22:06:20] Player hit Enemy for 20 damage!
+[22:06:21] Player hit Enemy for 20 damage!
+[22:06:21]  > Enemy destroyed!
+[22:06:21]  > Gained 10 XP! (Total: 70)
+[22:06:21] Spawner created enemy at (3,8)
+[22:06:21] Player hit Enemy for 20 damage!
+[22:06:22] Player hit Enemy for 20 damage!
+[22:06:22]  > Enemy destroyed!
+[22:06:22]  > Gained 10 XP! (Total: 80)
+[22:06:22] Spawner created enemy at (4,5)
+[22:06:22] Player moved to (2, 4)
+[22:06:23] Player moved to (3, 4)
+[22:06:23] Player hit Enemy for 20 damage!
+[22:06:23] Player hit Enemy for 20 damage!
+[22:06:23]  > Enemy destroyed!
+[22:06:23]  > Gained 10 XP! (Total: 90)
+[22:06:23] Spawner created enemy at (2,5)
+[22:06:24] Player hit Enemy for 20 damage!
+[22:06:25] Player hit Enemy for 20 damage!
+[22:06:25]  > Enemy destroyed!
+[22:06:25]  > Gained 10 XP! (Total: 100)
+[22:06:25] Spawner created enemy at (3,8)
+[22:06:25] Player hit Enemy for 20 damage!
+[22:06:25] Player hit Enemy for 20 damage!
+[22:06:25]  > Enemy destroyed!
+[22:06:25]  > Gained 10 XP! (Total: 110)
+[22:06:25] Spawner created enemy at (2,5)
+[22:06:26] Player hit Enemy for 20 damage!
+[22:06:26] Player hit Enemy for 20 damage!
+[22:06:26]  > Enemy destroyed!
+[22:06:26]  > Gained 10 XP! (Total: 120)
+[22:06:26] Spawner created enemy at (2,7)
+[22:06:27] Player hit Enemy for 20 damage!
+[22:06:27] Player hit Enemy for 20 damage!
+[22:06:27]  > Enemy destroyed!
+[22:06:27]  > Gained 10 XP! (Total: 130)
+[22:06:27] Spawner created enemy at (2,5)
+[22:06:27] Player hit Enemy for 20 damage!
+[22:06:28] Player hit Enemy for 20 damage!
+[22:06:28]  > Enemy destroyed!
+[22:06:28]  > Gained 10 XP! (Total: 140)
+[22:06:28] Spawner created enemy at (1,8)
+[22:06:28] Player hit Enemy for 20 damage!
+[22:06:28] Player hit Enemy for 20 damage!
+[22:06:28]  > Enemy destroyed!
+[22:06:28]  > Gained 10 XP! (Total: 150)
+[22:06:28] Spawner created enemy at (2,5)
+[22:06:29] Player moved to (2, 4)
+[22:06:30] Player moved to (1, 4)
+[22:06:30] Player moved to (1, 5)
+[22:06:31] Player hit Enemy for 20 damage!
+[22:06:31] Player hit Enemy for 20 damage!
+[22:06:31]  > Enemy destroyed!
+[22:06:31]  > Gained 10 XP! (Total: 160)
+[22:06:31] Spawner created enemy at (4,5)
+[22:06:31] Player moved to (2, 5)
+[22:06:32] Player hit Enemy for 20 damage!
+[22:06:32] Player hit Enemy for 20 damage!
+[22:06:32] Player hit Enemy for 20 damage!
+[22:06:32]  > Enemy destroyed!
+[22:06:32]  > Gained 10 XP! (Total: 170)
+[22:06:33] Player hit Enemy for 20 damage!
+[22:06:33] Player hit Enemy for 20 damage!
+[22:06:33]  > Enemy destroyed!
+[22:06:33]  > Gained 10 XP! (Total: 180)
+[22:06:33] Spawner created enemy at (3,8)
+[22:06:33] Player hit Enemy for 20 damage!
+[22:06:34] Player hit Enemy for 20 damage!
+[22:06:34]  > Enemy destroyed!
+[22:06:34]  > Gained 10 XP! (Total: 190)
+[22:06:34] Player hit Enemy for 20 damage!
+[22:06:35] Player hit Enemy for 20 damage!
+[22:06:35]  > Enemy destroyed!
+[22:06:35]  > Gained 10 XP! (Total: 200)
+[22:06:35] Spawner created enemy at (2,7)
+[22:06:35] Player hit Enemy for 20 damage!
+[22:06:35] Player hit Enemy for 20 damage!
+[22:06:35]  > Enemy destroyed!
+[22:06:35]  > Gained 10 XP! (Total: 210)
+[22:06:36] Player hit Enemy for 20 damage!
+[22:06:36] Player hit Enemy for 20 damage!
+[22:06:36]  > Enemy destroyed!
+[22:06:36]  > Gained 10 XP! (Total: 220)
+[22:06:36] Spawner created enemy at (2,9)
+[22:06:37] Player hit Enemy for 20 damage!
+[22:06:37] Player hit Enemy for 20 damage!
+[22:06:37]  > Enemy destroyed!
+[22:06:37]  > Gained 10 XP! (Total: 230)
+[22:06:37] Player moved to (2, 6)
+[22:06:38] Player moved to (2, 7)
+[22:06:38] Spawner created enemy at (1,8)
+[22:06:39] Player hit Enemy for 20 damage!
+[22:06:39] Player hit Enemy for 20 damage!
+[22:06:39] Player hit Enemy for 20 damage!
+[22:06:39] Player hit Enemy for 20 damage!
+[22:06:39] Spawner created enemy at (1,8)
+[22:06:40] Player hit Enemy for 20 damage!
+[22:06:40]  > Enemy destroyed!
+[22:06:40]  > Gained 10 XP! (Total: 240)
+[22:06:40] Player moved to (2, 8)
+[22:06:40] Player hit Enemy for 20 damage!
+[22:06:41] Player hit Enemy for 20 damage!
+[22:06:41]  > Enemy destroyed!
+[22:06:41]  > Gained 10 XP! (Total: 250)
+[22:06:41] Player hit Enemy for 20 damage!
+[22:06:42] Player hit Enemy for 20 damage!
+[22:06:42] Player hit Enemy for 20 damage!
+[22:06:42]  > Enemy destroyed!
+[22:06:42]  > Gained 10 XP! (Total: 260)
+[22:06:42] Player hit Enemy for 20 damage!
+[22:06:42]  > Enemy destroyed!
+[22:06:42]  > Gained 10 XP! (Total: 270)
+[22:06:43] Player moved to (3, 8)
+[22:06:43] Player hit Enemy for 20 damage!
+[22:06:43] Player hit Enemy for 20 damage!
+[22:06:43]  > Enemy destroyed!
+[22:06:43]  > Gained 10 XP! (Total: 280)
+[22:06:43] Victory! Level cleared.
+[22:06:43] Level Complete! Preparing next level...
+[22:06:47] Level 2 initialized.
+[22:06:51] Game saved successfully.

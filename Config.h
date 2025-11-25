@@ -8,7 +8,7 @@ namespace Config {
     constexpr int MAX_BOARD_SIZE = 25;    // максимальный размер поля
 
     // ----- Игрок -----
-    constexpr int PLAYER_DEFAULT_HEALTH = 100;
+    constexpr int PLAYER_DEFAULT_HEALTH = 1000;
     constexpr int PLAYER_MELEE_DAMAGE = 20;
     constexpr int PLAYER_RANGED_DAMAGE = 10;
     constexpr int PLAYER_ATTACK_RANGE = 2;
@@ -35,4 +35,12 @@ namespace Config {
 
     // ----- Прочее -----
     constexpr int DAMAGE_EXPERIENCE_REWARD = 10;  // опыт за убийство врага
+
+    // ----- Баланс уровней -----
+    constexpr double LEVEL_HP_MULTIPLIER = 1.2; // +20% ХП за уровень
+    constexpr int LEVEL_SIZE_INCREMENT = 2;     // +2 клетки к размеру поля за уровень
+    constexpr int MAX_LEVEL_SIZE = 25;          // Ограничение размера
+    
+    // ----- КОНЕЦ ИГРЫ ------
+    constexpr int MAX_LEVEL = 3; // После прохождения 3-го уровня — победа
 }
