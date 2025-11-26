@@ -1,15 +1,19 @@
 #pragma once
 #include "Command.h"
 #include "Direction.h"
+#include "Player.h" 
 #include <iostream>
 #include <map>
+#include <set>
+#include <vector>
 #include <fstream>
 #include <string>
-#include <sstream>
+#include <conio.h> 
 
 class InputHandler {
 private:
     std::map<char, CommandType> keyMap;
+    std::string statusMessage;
 
     CommandType stringToCommand(const std::string& str) {
         if (str == "Move") return CommandType::Move;
@@ -20,48 +24,32 @@ private:
         if (str == "SaveGame") return CommandType::SaveGame;
         if (str == "LoadGame") return CommandType::LoadGame;
         if (str == "Quit") return CommandType::Quit;
-        if (str == "SkipTurn") return CommandType::SkipTurn;
         return CommandType::None;
+    }
+
+    std::vector<CommandType> getRequiredCommands() const {
+        return {
+            CommandType::Move,
+            CommandType::AttackMelee,
+            CommandType::AttackRanged,
+            CommandType::CastSpell,
+            CommandType::SwitchWeapon,
+            CommandType::SaveGame,
+            CommandType::LoadGame,
+            CommandType::Quit
+        };
     }
 
 public:
     InputHandler(const std::string& configFile = "controls.cfg") {
+        setDefaultControls();
         loadConfig(configFile);
     }
 
-    void loadConfig(const std::string& filename) {
-        std::ifstream file(filename);
-
-        if (!file.is_open()) {
-            std::cerr << "Config file not found. Using defaults.\n";
-            setDefaultControls();
-            return;
-        }
-
-        keyMap.clear();
-        std::string line;
-        while (std::getline(file, line)) {
-            if (line.empty()) continue;
-
-            size_t delimiterPos = line.find('=');
-            if (delimiterPos == std::string::npos) continue;
-
-            char key = std::tolower(line[0]);
-            std::string commandStr = line.substr(delimiterPos + 1);
-
-            if (!commandStr.empty() && commandStr.back() == '\r')
-                commandStr.pop_back();
-
-            CommandType type = stringToCommand(commandStr);
-
-            if (type != CommandType::None) {
-                keyMap[key] = type;
-            }
-        }
-        std::cout << "Controls loaded from " << filename << "\n";
-    }
+    std::string getStatusMessage() const { return statusMessage; }
 
     void setDefaultControls() {
+        keyMap.clear();
         keyMap['w'] = CommandType::Move;
         keyMap['a'] = CommandType::Move;
         keyMap['s'] = CommandType::Move;
@@ -73,13 +61,70 @@ public:
         keyMap['k'] = CommandType::SaveGame;
         keyMap['o'] = CommandType::LoadGame;
         keyMap['q'] = CommandType::Quit;
+        statusMessage = "Controls set to DEFAULT.";
+    }
+
+    void loadConfig(const std::string& filename) {
+        std::ifstream file(filename);
+        if (!file.is_open()) {
+            return;
+        }
+
+        std::map<char, CommandType> tempMap;
+        std::set<CommandType> assignedCommands;
+
+        std::string line;
+        while (std::getline(file, line)) {
+            if (line.empty()) continue;
+            size_t delimiterPos = line.find('=');
+            if (delimiterPos == std::string::npos) continue;
+
+            char key = std::tolower(line[0]);
+            std::string commandStr = line.substr(delimiterPos + 1);
+
+            if (!commandStr.empty() && commandStr.back() == '\r')
+                commandStr.pop_back();
+
+            CommandType type = stringToCommand(commandStr);
+            if (type == CommandType::None) continue;
+
+            if (tempMap.count(key)) {
+                setDefaultControls();
+                statusMessage = "[Config Error] Duplicate key assignment.";
+                return;
+            }
+
+            if (type != CommandType::Move && assignedCommands.count(type)) {
+                setDefaultControls();
+                statusMessage = "[Config Error] Duplicate command assignment.";
+                return;
+            }
+
+            tempMap[key] = type;
+            assignedCommands.insert(type);
+        }
+
+        for (const auto& req : getRequiredCommands()) {
+            if (assignedCommands.find(req) == assignedCommands.end()) {
+                setDefaultControls();
+                statusMessage = "[Config Error] Missing required command.";
+                return;
+            }
+        }
+
+        keyMap = tempMap;
+        statusMessage = "Custom controls loaded from " + filename;
     }
 
     Command getCommand(const Player& player) {
-        std::cout << "> ";
-        char input;
-        std::cin >> input;
-        input = std::tolower(input);
+        int key = _getch();
+
+        if (key == 0 || key == 224) {
+            _getch();
+            return Command{};
+        }
+
+        char input = static_cast<char>(std::tolower(key));
 
         Command cmd;
 
@@ -94,46 +139,48 @@ public:
             }
         }
         else {
-            std::cout << "Unknown key.\n";
             return cmd;
         }
 
         if (cmd.type == CommandType::AttackRanged) {
-            std::cout << "Direction (w/a/s/d): ";
-            char d; std::cin >> d;
-            auto dirOpt = keyToDir(std::tolower(d));
+            std::cout << "\n[AIM] Direction (w/a/s/d): ";
+            int dKey = _getch();
+            char d = static_cast<char>(std::tolower(dKey));
+
+            auto dirOpt = keyToDir(d);
             if (dirOpt) cmd.dir = *dirOpt;
-            else cmd.type = CommandType::None;
+            else {
+                std::cout << "Invalid direction.\n";
+                cmd.type = CommandType::None;
+            }
         }
-        // === ИСПРАВЛЕНИЕ ДЛЯ СПЕЛЛОВ ===
-        if (cmd.type == CommandType::CastSpell) {
-            // 1. Выводим список доступных заклинаний
+        else if (cmd.type == CommandType::CastSpell) {
             auto names = player.getSpellHand().getSpellNames();
             if (names.empty()) {
-                std::cout << "[!] No spells available!\n";
+                std::cout << "\n[!] No spells available!\n";
                 cmd.type = CommandType::None;
                 return cmd;
             }
 
-            std::cout << "Available Spells:\n";
+            std::cout << "\nAvailable Spells:\n";
             for (size_t i = 0; i < names.size(); ++i) {
                 std::cout << "  " << (i + 1) << ". " << names[i] << "\n";
             }
 
-            // 2. Просим ввод
             std::cout << "Spell index (1-" << names.size() << "): ";
             int idx;
-
             if (std::cin >> idx && idx > 0 && idx <= names.size()) {
                 cmd.spellIndex = idx - 1;
 
-                // Доп. параметры (цель/направление)
                 std::cout << "Target X Y (if needed, else 0 0): ";
-                int x, y; std::cin >> x >> y;
+                int x, y;
+                std::cin >> x >> y;
                 cmd.target = { x, y };
 
-                std::cout << "Direction w/a/s/d (if needed, else w): ";
-                char d; std::cin >> d;
+                std::cout << "Direction w/a/s/d (if needed): ";
+                int dKey = _getch();
+                char d = static_cast<char>(dKey);
+
                 auto dirOpt = keyToDir(d);
                 if (dirOpt) cmd.dir = *dirOpt;
             }

@@ -160,6 +160,7 @@
     <ClInclude Include="CombatController.h" />
     <ClInclude Include="Command.h" />
     <ClInclude Include="Config.h" />
+    <ClInclude Include="GameVisualizer.h" />
     <ClInclude Include="InputHandler.h" />
     <ClInclude Include="Exceptions.h" />
     <ClInclude Include="Explosion.h" />

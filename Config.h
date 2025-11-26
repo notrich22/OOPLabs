@@ -12,7 +12,8 @@ namespace Config {
     constexpr int PLAYER_MELEE_DAMAGE = 20;
     constexpr int PLAYER_RANGED_DAMAGE = 10;
     constexpr int PLAYER_ATTACK_RANGE = 2;
-    constexpr int PLAYER_SPELLS_COUNT = 5;
+    constexpr int PLAYER_SPELLS_COUNT = 50;
+	constexpr int XP_FOR_SPELL = 20;
     // ----- Враги -----
     constexpr int ENEMY_DEFAULT_HEALTH = 40;
     constexpr int ENEMY_MELEE_DAMAGE = 10;

@@ -2,67 +2,95 @@
 skinparam linetype ortho
 skinparam classAttributeIconSize 0
 skinparam shadowing true
+skinparam packageStyle rectangle
 
-' === ГРУППА: УПРАВЛЕНИЕ ИГРОЙ (ОСНОВА ЛАБЫ 3) ===
-package "Game Loop & Persistence" {
-    class Game {
-        - int currentLevel
-        - bool isRunning
+' === 1. ПАКЕТ ЯДРА И МОДЕЛИ (КОНТЕКСТ) ===
+package "Model and Core" {
+    class Game << (M,#C7E9B0) Model >> {
         - Board board
         - Player player
-        __
-        + init()
-        + run() : void
-        + nextLevel() : void
-        - processLevelUp() : void
-        - checkGameOver() : bool
+        - int currentLevel
+        + executeCommand(cmd) : bool
+        + updateWorld()
+        + isGameRunning() : bool
+        + getPlayer() : const Player&
+    }
+    
+    interface IObservable << (I, #FFCC00) Observable >> {
+        + notify(msg)
+        + addObserver(o)
     }
 
-    class SaveManager {
-        + {static} saveGame(game : Game, file : string)
-        + {static} loadGame(game : Game, file : string)
-        - {static} computeStableHash(data : string) : size_t
+    class Game
+}
+
+' === 2. ПАКЕТ КОМАНД И КОНТРОЛЛЕРА ===
+package "Controller and Input" {
+    class Command << (D, #7F7F7F) Data >> {
+        + type : CommandType
+        + dir : Direction
+        + target : pair<int, int>
+    }
+
+    class InputHandler << (C, #DAAA00) Strategy >> {
+        - keyMap : map<char, CommandType>
+        + InputHandler(config: string)
+        + getCommand(player: Player&) : Command
+        + loadConfig(filename)
+        + setDefaultControls()
+    }
+
+    class GameManager << (T, #3388BB) Template Manager >> {
+        - InputT input  // Compostition (Requirement: Creates object)
+        - VisualizerT& visualizer
+        + GameManager(Game&, VisualizerT&)
+        + run()
     }
 }
 
-' === ГРУППА: ОБРАБОТКА ОШИБОК (НОВОЕ В ЛАБЕ 3) ===
-package "Exception Handling" {
-    class GameException
-    class FileException extends GameException
-    class SaveDataException extends GameException
-    class CorruptedSaveException extends GameException
+' === 3. ПАКЕТ ВЫВОДА И ЛОГИРОВАНИЯ ===
+package "View and Logging" {
+    interface IGameObserver << (I, #FF7700) Observer >> {
+        + {abstract} onGameEvent(msg)
+    }
+
+    class FileLogger {
+        - ofstream file
+        + onGameEvent(msg)
+    }
+
+    class ConsoleRenderer << (V, #99CCFF) Drawer Strategy >> {
+        - vector<string> messageBuffer
+        + renderBoard(Board, Player...)
+        + addMessage(msg)
+    }
+
+    class GameVisualizer <RenderT> {
+        - RenderT renderer // Compostition (Requirement: Creates object)
+        + GameVisualizer()
+        + onGameEvent(msg)
+        + render(Game&)
+    }
 }
 
-' === ГРУППА: ПРОГРЕССИЯ И МАГИЯ (ИЗМЕНЕНИЯ ЛАБЫ 3) ===
-package "Progression System" {
-    class Player {
-        - SpellHand spellHand
-        - int health
-        + setHealth(int)
-    }
+' === 4. СВЯЗИ ===
 
-    class SpellHand {
-        + removeRandomHalf() : void
-        + addSpell(spell)
-    }
+' Controller -> Model/Visualizer
+GameManager --> Game
+GameManager --> GameVisualizer
 
-    interface ISpell {
-        + {abstract} upgrade() : void
-        + {abstract} getUpgradeInfo() : string
-    }
-    }
+' View/Observer Linkage
+IObservable <|-- Game
+IGameObserver <|.. FileLogger
+IGameObserver <|.. GameVisualizer
 
-' === СВЯЗИ ===
+' Visualizer Composition (Policy Injection)
+GameVisualizer *-- RenderT
 
-' Game управляет процессом
-Game *-- Player
-Game ..> SaveManager : <<friend>> \nuses for save/load
+' Input Composition (Policy Injection)
+GameManager *-- InputHandler
 
-' SaveManager использует исключения
-SaveManager ..> GameException : throws
-
-' Связи игрока с магией
-Player *-- SpellHand
-SpellHand o-- ISpell
+' Data flow
+InputHandler ..> Command
 
 @enduml

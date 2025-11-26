@@ -120,11 +120,11 @@
     <ClCompile Include="EnhanceSpell.h">
       <Filter>Файлы заголовков\spells</Filter>
     </ClCompile>
-    <ClCompile Include="SaveManager.cpp">
-      <Filter>Исходные файлы\core</Filter>
-    </ClCompile>
     <ClCompile Include="IObservable.h">
       <Filter>Файлы заголовков\core</Filter>
+    </ClCompile>
+    <ClCompile Include="SaveManager.cpp">
+      <Filter>Исходные файлы\controllers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -209,9 +209,6 @@
     <ClInclude Include="SpellFactory.cpp">
       <Filter>Файлы заголовков\spells</Filter>
     </ClInclude>
-    <ClInclude Include="SaveManager.h">
-      <Filter>Файлы заголовков\core</Filter>
-    </ClInclude>
     <ClInclude Include="include\json.hpp">
       <Filter>Исходные файлы\external</Filter>
     </ClInclude>
@@ -221,14 +218,20 @@
     <ClInclude Include="Command.h">
       <Filter>Файлы заголовков\core</Filter>
     </ClInclude>
-    <ClInclude Include="InputHandler.h">
-      <Filter>Файлы заголовков\core</Filter>
-    </ClInclude>
     <ClInclude Include="GameManager.h">
       <Filter>Файлы заголовков\controllers</Filter>
     </ClInclude>
     <ClInclude Include="Logger.h">
       <Filter>Файлы заголовков\core</Filter>
+    </ClInclude>
+    <ClInclude Include="SaveManager.h">
+      <Filter>Файлы заголовков\controllers</Filter>
+    </ClInclude>
+    <ClInclude Include="GameVisualizer.h">
+      <Filter>Файлы заголовков\controllers</Filter>
+    </ClInclude>
+    <ClInclude Include="InputHandler.h">
+      <Filter>Файлы заголовков\controllers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

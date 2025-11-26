@@ -2,33 +2,43 @@
 #include "Game.h"
 #include "Command.h"
 
-template <typename InputT, typename RenderT>
+template <typename InputT, typename VisualizerT>
 class GameManager {
 private:
     Game& game;
-    InputT& input;
-    RenderT& renderer;
+    InputT input;           
+    VisualizerT& visualizer;
 
 public:
-    GameManager(Game& g, InputT& i, RenderT& r)
-        : game(g), input(i), renderer(r) {
+    GameManager(Game& g, VisualizerT& v)
+        : game(g), visualizer(v) {
+
     }
 
     void run() {
         game.setRunning(true);
-
+        game.logEvent(input.getStatusMessage());
         while (game.isGameRunning()) {
-            const Player& playerRef = *game.getPlayer();
+            visualizer.render(game);
 
-            renderer.renderBoard(game.getBoard(), playerRef, game.getTurnCounter(), game.getSeed());
-
-            Command cmd = input.getCommand(playerRef);
-
-            bool turnMade = game.executeCommand(cmd);
-
-            if (turnMade) {
-                game.updateWorld();
+            if (game.getPlayer()) {
+                Command cmd = input.getCommand(*game.getPlayer());
+                bool turnMade = game.executeCommand(cmd);
+                if (turnMade) {
+                    game.updateWorld();
+                }
             }
         }
+
+        if (game.getPlayer() && !game.getPlayer()->isAlive()) {
+            visualizer.showGameOver();
+        }
+        else if (game.isVictory()) {
+            visualizer.showWin();
+        }
+        std::cout << "\nPress Enter to exit...";
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        std::cin.get();
     }
+
 };

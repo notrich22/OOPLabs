@@ -1,6 +1,7 @@
 #include "Game.h"
 #include "InputHandler.h"
 #include "ConsoleRenderer.h"
+#include "GameVisualizer.h"
 #include "GameManager.h"
 #include "Logger.h"
 #include "SaveManager.h"
@@ -9,22 +10,39 @@
 #include <iostream>
 #include <limits>
 #include <random>
+#include <cstring>
 
-int main() {
+int main(int argc, char* argv[]) {
     try {
+        bool logToFile = true;
+        bool logToConsole = true;
+
+        if (argc > 1) {
+            if (std::strcmp(argv[1], "-f") == 0 || std::strcmp(argv[1], "--file") == 0) {
+                logToConsole = false;
+                std::cout << "Logging Mode: FILE ONLY\n";
+            }
+            else if (std::strcmp(argv[1], "-c") == 0 || std::strcmp(argv[1], "--console") == 0) {
+                logToFile = false;
+                std::cout << "Logging Mode: CONSOLE ONLY\n";
+            }
+        }
+
         unsigned seed = std::random_device{}();
         Game game(10, 10, seed);
 
-
         FileLogger fileLogger("game_log.txt");
-        game.addObserver(&fileLogger);
+        if (logToFile) {
+            game.addObserver(&fileLogger);
+        }
 
-        ConsoleRenderer renderer;
-        game.addObserver(&renderer);
+        GameVisualizer<ConsoleRenderer> visualizer;
 
-        InputHandler input("controls.cfg");
+        if (logToConsole) {
+            game.addObserver(&visualizer);
+        }
 
-        std::cout << "=== WELCOME TO THE STEPWARS ===\n";
+        std::cout << "=== WELCOME TO THE GAME ===\n";
         std::cout << "1. New Game\n";
         std::cout << "2. Load Game\n";
         std::cout << "Choose option: ";
@@ -35,15 +53,21 @@ int main() {
         if (choice == '2') {
             try {
                 SaveManager::loadGame(game, "save.json");
-                std::cout << "Save loaded successfully.\n";
-
+                game.logEvent("Save loaded successfully.");
+                if (logToConsole) {
+                    visualizer.setLogs(game.getLogs());
+                }
                 std::cout << "Press Enter to start...";
                 std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                 std::cin.get();
+
+                game.setRunning(true);
             }
             catch (const std::exception& e) {
+                game.logEvent("[System Error] Load failed: " + std::string(e.what()));
                 std::cerr << "\n[ERROR] Load failed: " << e.what() << "\n";
                 std::cout << "Starting NEW GAME instead.\n";
+
                 std::cout << "Press Enter to continue...";
                 std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                 std::cin.get();
@@ -63,7 +87,7 @@ int main() {
             game.init();
         }
 
-        GameManager<InputHandler, ConsoleRenderer> manager(game, input, renderer);
+        GameManager<InputHandler, GameVisualizer<ConsoleRenderer>> manager(game, visualizer);
 
         manager.run();
 

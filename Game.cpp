@@ -113,14 +113,16 @@ void Game::init(std::shared_ptr<Player> existingPlayer) {
 
 // Переход на следующий уровень
 void Game::nextLevel() {
-    notify("Level Complete! Preparing next level...");
+    notify("=== LEVEL " + std::to_string(currentLevel) + " COMPLETE ===");
 
-    processLevelUp();
+    processLevelUp(); // Меню
 
     currentLevel++;
     player->setHealth(Config::PLAYER_DEFAULT_HEALTH);
+    notify("HP Restored to full.");
+
     player->getSpellHand().removeRandomHalf();
-    player->getSpellHand().addRandomSpell();
+    notify("Half of spells lost in transition.");
 
     int newSize = board.getWidth() + Config::LEVEL_SIZE_INCREMENT;
     if (newSize > Config::MAX_LEVEL_SIZE) {
@@ -247,8 +249,10 @@ bool Game::executeCommand(const Command& cmd) {
     case CommandType::CastSpell: {
         auto& hand = player->getSpellHand();
         auto spell = hand.getSpell(cmd.spellIndex);
+
         if (spell) {
             std::shared_ptr<ICombatEntity> targetEntity = nullptr;
+            // Определение цели для направленных заклинаний
             if (cmd.dir != Direction::None) {
                 int maxRange = 3 + player->getEnhancementState().rangeBonus();
                 auto t = combat.findTargetInDirection(player, cmd.dir, maxRange);
@@ -263,9 +267,42 @@ bool Game::executeCommand(const Command& cmd) {
 
             if (spell->canCast(ctx)) {
                 if (spell->cast(ctx)) {
+                    // 1. Удаляем карту
                     hand.removeSpell(cmd.spellIndex);
-                    notify("Player cast " + spell->name() + "!");
+
+                    // 2. Логируем
+                    std::string sName = spell->name();
+                    notify("Player cast " + sName + "!");
                     turnUsed = true;
+
+                    if (sName == "SummonAlly") {
+                        int addedCount = 0;
+                        for (int y = 0; y < board.getHeight(); ++y) {
+                            for (int x = 0; x < board.getWidth(); ++x) {
+                                Cell& c = board.getCell(x, y);
+                                if (c.hasEntity() && c.getEntity()->symbol() == 'A') {
+                                    bool known = false;
+                                    for (auto& existing : allies) {
+                                        if (existing.get() == c.getEntity().get()) {
+                                            known = true;
+                                            break;
+                                        }
+                                    }
+                                    if (!known) {
+                                        if (auto newAlly = std::dynamic_pointer_cast<Ally>(c.getEntity())) {
+                                            allies.push_back(newAlly);
+                                            addedCount++;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        if (addedCount > 0) {
+                            notify("Synced " + std::to_string(addedCount) + " new Ally(ies) to squad.");
+                        }
+                        else {
+                        }
+                    }
                 }
             }
             else {
@@ -304,8 +341,16 @@ bool Game::executeCommand(const Command& cmd) {
     int xpGained = player->getExperience() - xpBefore;
     if (xpGained > 0) {
         notify(" > Gained " + std::to_string(xpGained) + " XP! (Total: " + std::to_string(player->getExperience()) + ")");
+        if (player->getExperience() % Config::XP_FOR_SPELL == 0) {
+            std::string spellName = player->getSpellHand().addRandomSpell();
+            if (!spellName.empty()) {
+                notify("!!! NEW SPELL OBTAINED: " + spellName + " !!!");
+            }
+            else {
+                notify("Inventory full. Spell discaded.");
+            }
+        }
     }
-
     return turnUsed;
 }
 
@@ -336,45 +381,56 @@ void Game::updateWorld() {
 
 // Логика союзников
 void Game::processAllies() {
-    if (allies.empty() || enemies.empty()) return;
+    if (allies.empty()) return;
 
     for (auto& ally : allies) {
         if (!ally || !ally->isAlive()) continue;
 
         if (ally->shouldSkipMove()) {
             ally->setSkipNextMove(false);
+            auto [ax, ay] = ally->getPosition();
+            notify("Ally at (" + std::to_string(ax) + "," + std::to_string(ay) + ") is slowed.");
             continue;
         }
 
+        auto [oldX, oldY] = ally->getPosition();
+
         std::shared_ptr<Enemy> nearestEnemy = nullptr;
         int minDist = 10000;
-        auto [ax, ay] = ally->getPosition();
 
-        for (auto& enemy : enemies) {
-            if (!enemy || !enemy->isAlive()) continue;
-            auto [ex, ey] = enemy->getPosition();
-            int dist = std::abs(ax - ex) + std::abs(ay - ey);
-            if (dist < minDist) {
-                minDist = dist;
-                nearestEnemy = enemy;
+        if (!enemies.empty()) {
+            for (auto& enemy : enemies) {
+                if (!enemy || !enemy->isAlive()) continue;
+                auto [ex, ey] = enemy->getPosition();
+                int dist = std::abs(oldX - ex) + std::abs(oldY - ey);
+                if (dist < minDist) {
+                    minDist = dist;
+                    nearestEnemy = enemy;
+                }
             }
         }
 
-        bool moved = false;
+        bool moveSuccess = false;
+
         if (nearestEnemy && minDist <= 5) {
             auto [ex, ey] = nearestEnemy->getPosition();
-            int dx = ex - ax;
-            int dy = ey - ay;
-            if (std::abs(dx) > std::abs(dy)) dx = (dx > 0) ? 1 : -1, dy = 0;
-            else dy = (dy > 0) ? 1 : -1, dx = 0;
+            int dx = ex - oldX;
+            int dy = ey - oldY;
 
-            moved = movement.move(*ally, dx, dy);
-            if (!moved) {
+            if (std::abs(dx) > std::abs(dy)) { dx = (dx > 0) ? 1 : -1; dy = 0; }
+            else { dy = (dy > 0) ? 1 : -1; dx = 0; }
+
+            moveSuccess = movement.move(*ally, dx, dy);
+
+            if (!moveSuccess) {
                 std::array<Direction, 4> shuf = cardinalDirs;
                 std::shuffle(shuf.begin(), shuf.end(), rng);
                 for (Direction dir : shuf) {
                     auto [adx, ady] = delta(dir);
-                    if (movement.move(*ally, adx, ady)) break;
+                    if (movement.move(*ally, adx, ady)) {
+                        moveSuccess = true;
+                        break;
+                    }
                 }
             }
         }
@@ -383,11 +439,25 @@ void Game::processAllies() {
             std::shuffle(shuf.begin(), shuf.end(), rng);
             for (Direction dir : shuf) {
                 auto [adx, ady] = delta(dir);
-                if (movement.move(*ally, adx, ady)) break;
+                if (movement.move(*ally, adx, ady)) {
+                    moveSuccess = true;
+                    break;
+                }
+            }
+        }
+
+        if (moveSuccess) {
+            auto [newX, newY] = ally->getPosition();
+
+            if (newX != oldX || newY != oldY) {
+                notify("Ally moved from (" + std::to_string(oldX) + "," + std::to_string(oldY) +
+                    ") to (" + std::to_string(newX) + "," + std::to_string(newY) + ")");
+            }
+            else {
+                notify("Ally at (" + std::to_string(oldX) + "," + std::to_string(oldY) + ") attacked Enemy!");
             }
         }
     }
-
     allies.erase(std::remove_if(allies.begin(), allies.end(),
         [](auto& a) { return !a->isAlive(); }), allies.end());
 }
@@ -553,11 +623,13 @@ void Game::processLevelUp() {
         int newDmg = player->getMeleeAttackPower() + 5;
         player->setAttackPowers(newDmg, player->getRangedAttackPower());
         std::cout << "Melee damage increased to " << newDmg << "!\n";
+        notify("Level Up Reward: Melee Damage increased (+5).");
     }
     else if (choice == 2) {
         int newDmg = player->getRangedAttackPower() + 3;
         player->setAttackPowers(player->getMeleeAttackPower(), newDmg);
         std::cout << "Ranged damage increased to " << newDmg << "!\n";
+        notify("Level Up Reward: Ranged Damage increased (+3).");
     }
     else if (choice == 3) {
         if (!canUpgradeSpell) {
@@ -586,6 +658,7 @@ void Game::processLevelUp() {
             auto selectedSpell = hand.getSpell(spellIndex - 1);
             selectedSpell->upgrade();
             std::cout << selectedSpell->name() << " has been upgraded!\n";
+            notify("Level Up Reward: Spell upgraded/added.");
         }
     }
 

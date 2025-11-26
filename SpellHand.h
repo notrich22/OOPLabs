@@ -55,11 +55,14 @@ public:
     // Максимальная вместимость
     std::size_t capacity() const noexcept { return capacity_; }
 
-    void addRandomSpell() {
+    std::string addRandomSpell() {
         if (spells_.size() >= capacity_) {
-            return;
+            return ""; // Рука полна
         }
-        addSpell(SpellFactory::createRandom());
+        auto spell = SpellFactory::createRandom();
+        std::string name = spell->name();
+        addSpell(spell);
+        return name;
     }
 
     // Проверяет, пустая ли рука

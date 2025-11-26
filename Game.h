@@ -36,7 +36,14 @@ private:
     int turnCounter = 1;
     bool isRunning = false;
     int MAX_ENEMIES = 0;
-
+    std::vector<std::string> actionLogs;
+    void notify(const std::string& message) {
+        actionLogs.push_back(message);
+        if (actionLogs.size() > 5) {
+            actionLogs.erase(actionLogs.begin());
+        }
+        IObservable::notify(message);
+    }
     // Ходы и фазы игры
     void processLevelUp();
     void processPlayerTurn();
@@ -55,6 +62,10 @@ public:
     void setRunning(bool v) { isRunning = v; }
     bool executeCommand(const Command& cmd);
     void updateWorld();
+
+    void logEvent(const std::string& message) {
+        notify(message);
+    }
 
     // Конструктор
     Game(int width, int height, unsigned seed = std::random_device{}());
@@ -113,9 +124,17 @@ public:
     void generateBoard() {
         board = Board(board.getWidth(), board.getHeight(), rng);
     }
-
+    bool isVictory() const {
+        return currentLevel >= Config::MAX_LEVEL &&
+            enemies.empty() &&
+            spawners.empty() &&
+            player && player->isAlive();
+    }
     Board& getBoard() { return board; }
     const Board& getBoard() const { return board; }
+
+    const std::vector<std::string>& getLogs() const { return actionLogs; }
+    void setLogs(const std::vector<std::string>& logs) { actionLogs = logs; }
 
     // Очистка всех сущностей (для загрузки)
     void clearEntities() {

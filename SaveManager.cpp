@@ -8,6 +8,7 @@
 
 using json = nlohmann::json;
 
+// === ДЕТЕРМИНИРОВАННЫЙ ХЭШ (DJB2) ===
 size_t computeStableHash(const std::string& str) {
     size_t hash = 5381;
     for (char c : str) {
@@ -21,16 +22,14 @@ void SaveManager::saveGame(const Game& game, const std::string& filename) {
         json gameData;
         const Board& board = game.getBoard();
 
-        // СБОР ДАННЫХ (DATA)
-
-        // Meta
+        // === 1. СБОР ДАННЫХ ===
         gameData["meta"]["level"] = game.getLevel();
         gameData["meta"]["turn"] = game.getTurnCounter();
         gameData["meta"]["seed"] = game.getSeed();
         gameData["meta"]["width"] = board.getWidth();
         gameData["meta"]["height"] = board.getHeight();
 
-        // Board
+        // Board Types
         for (int y = 0; y < board.getHeight(); ++y) {
             for (int x = 0; x < board.getWidth(); ++x) {
                 const Cell& c = board.getCell(x, y);
@@ -50,10 +49,12 @@ void SaveManager::saveGame(const Game& game, const std::string& filename) {
             gameData["player"]["x"] = px;
             gameData["player"]["y"] = py;
             gameData["player"]["hp"] = p->getHealth();
-            gameData["player"]["attack_mode"] =
-                (p->getAttackMode() == AttackMode::Melee ? "melee" : "ranged");
+            gameData["player"]["attack_mode"] = (p->getAttackMode() == AttackMode::Melee ? "melee" : "ranged");
+
+            // Stats
             gameData["player"]["stats"]["melee"] = p->getMeleeAttackPower();
             gameData["player"]["stats"]["ranged"] = p->getRangedAttackPower();
+
             for (auto& sp : p->getSpellHand().getSpells()) {
                 gameData["player"]["spells"].push_back(sp->name());
             }
@@ -83,22 +84,22 @@ void SaveManager::saveGame(const Game& game, const std::string& filename) {
             }
         }
 
-        // ПОДСЧЕТ ХЭША
+        // Logs
+        gameData["logs"] = game.getLogs();
+
+        // === 2. ХЭШ И ЗАПИСЬ ===
         std::string serializedData = gameData.dump(-1);
         size_t hash = computeStableHash(serializedData);
 
-        // ФИНАЛЬНАЯ УПАКОВКА
         json finalJson;
         finalJson["hash"] = hash;
         finalJson["data"] = gameData;
 
-        // Запись в файл
         std::ofstream file(filename);
         if (!file.is_open()) throw FileException(filename, "Cannot open for writing");
 
         file << std::setw(4) << finalJson;
-
-        std::cout << "[SaveManager] Saved. Hash: " << hash << "\n";
+        std::cout << "[SaveManager] Saved successfully.\n";
     }
     catch (const json::exception& e) { throw SaveDataException(e.what()); }
     catch (const GameException&) { throw; }
@@ -113,7 +114,6 @@ void SaveManager::loadGame(Game& game, const std::string& filename) {
         json finalJson;
         file >> finalJson;
 
-        // ПРОВЕРКА ЦЕЛОСТНОСТИ
         if (!finalJson.contains("hash") || !finalJson.contains("data")) {
             throw CorruptedSaveException("Invalid format (missing hash/data)");
         }
@@ -121,79 +121,112 @@ void SaveManager::loadGame(Game& game, const std::string& filename) {
         size_t storedHash = finalJson["hash"];
         json gameData = finalJson["data"];
 
-        // Превращаем данные обратно в строку
         std::string currentDataString = gameData.dump(-1);
         size_t calculatedHash = computeStableHash(currentDataString);
 
         if (storedHash != calculatedHash) {
-            std::cout << "\n[SECURITY ALERT]\n";
-            std::cout << "Stored Hash (from file): " << storedHash << "\n";
-            std::cout << "Actual Hash (calculated): " << calculatedHash << "\n";
             throw CorruptedSaveException("File has been modified manually!");
         }
 
-        // ЗАГРУЗКА
+        // === ЗАГРУЗКА МИРА ===
         if (!gameData.contains("meta")) throw SaveDataException("Missing meta data");
 
         int level = gameData["meta"].value("level", 1);
         int seed = gameData["meta"]["seed"];
         int savedTurn = gameData["meta"]["turn"];
-        int width = gameData["meta"].value("width", 10);
-        int height = gameData["meta"].value("height", 10);
+        int width = gameData["meta"].value("width", 15);
+        int height = gameData["meta"].value("height", 15);
 
         game.setLevel(level);
         game.setSeed(seed);
-        game.board = Board(width, height, game.rng);
-        game.clearEntities();
 
-        // Player
+        // Создаем доску нужного размера (важно!)
+        game.board = Board(width, height, game.rng);
+        game.clearEntities(); // Чистим всё перед загрузкой
+
+        // === ИГРОК ===
         auto p = std::make_shared<Player>();
         p->setHealth(gameData["player"]["hp"]);
-        p->setAttackMode(gameData["player"]["attack_mode"] == "melee"
-            ? AttackMode::Melee : AttackMode::Ranged);
-        int savedMelee = Config::PLAYER_MELEE_DAMAGE;
-        int savedRanged = Config::PLAYER_RANGED_DAMAGE;
+        p->setAttackMode(gameData["player"]["attack_mode"] == "melee" ? AttackMode::Melee : AttackMode::Ranged);
 
         if (gameData["player"].contains("stats")) {
-            savedMelee = gameData["player"]["stats"].value("melee", Config::PLAYER_MELEE_DAMAGE);
-            savedRanged = gameData["player"]["stats"].value("ranged", Config::PLAYER_RANGED_DAMAGE);
+            p->setAttackPowers(
+                gameData["player"]["stats"].value("melee", Config::PLAYER_MELEE_DAMAGE),
+                gameData["player"]["stats"].value("ranged", Config::PLAYER_RANGED_DAMAGE)
+            );
         }
 
-        p->setAttackPowers(savedMelee, savedRanged);
-        auto& hand = p->getSpellHand();
-        hand.clear();
+        p->getSpellHand().clear();
+        for (auto& s : gameData["player"]["spells"]) {
+            std::string nm = s.get<std::string>();
+            if (nm == "Firebolt") p->getSpellHand().addSpell(std::make_shared<Firebolt>(5, 3));
+            else if (nm == "EnhanceSpell") p->getSpellHand().addSpell(std::make_shared<EnhanceSpell>());
+            else if (nm == "Explosion") p->getSpellHand().addSpell(std::make_shared<Explosion>());
+            else if (nm == "TrapSpell") p->getSpellHand().addSpell(std::make_shared<TrapSpell>());
+            else if (nm == "SummonAlly") p->getSpellHand().addSpell(std::make_shared<SummonAlly>());
+        }
         game.setPlayer(p);
-        game.placeEntityAt(p, gameData["player"]["x"], gameData["player"]["y"]);
 
-        // Enemies
+        // ЗАЩИТА ОТ ОШИБКИ "Cell Occupied" для Игрока
+        try {
+            game.placeEntityAt(p, gameData["player"]["x"], gameData["player"]["y"]);
+        }
+        catch (...) {
+            std::cerr << "[WARNING] Player pos blocked. Spawning randomly.\n";
+            game.spawnEntity(p);
+        }
+
+        // === ВРАГИ ===
         if (gameData.contains("enemies")) {
             for (auto& e : gameData["enemies"]) {
                 auto enemy = std::make_shared<Enemy>();
                 enemy->setHealth(e["hp"]);
                 game.addEnemy(enemy);
-                game.placeEntityAt(enemy, e["x"], e["y"]);
+                // ЗАЩИТА
+                try {
+                    game.placeEntityAt(enemy, e["x"], e["y"]);
+                }
+                catch (...) {
+                    // Если клетка занята, просто пропускаем врага (он исчезнет)
+                    std::cerr << "[WARNING] Skipped overlapping enemy.\n";
+                }
             }
         }
 
-        // Spawners
+        // === СПАВНЕРЫ ===
         if (gameData.contains("spawners")) {
             for (auto& s : gameData["spawners"]) {
                 auto spawner = std::make_shared<EnemySpawner>();
                 game.addSpawner(spawner);
-                game.placeEntityAt(spawner, s["x"], s["y"]);
+                // ЗАЩИТА
+                try {
+                    game.placeEntityAt(spawner, s["x"], s["y"]);
+                }
+                catch (...) {
+                    std::cerr << "[WARNING] Skipped overlapping spawner.\n";
+                }
             }
         }
 
-        // Towers
+        // === БАШНИ ===
         if (gameData.contains("towers")) {
             for (auto& t : gameData["towers"]) {
                 auto tower = std::make_shared<EnemyTower>(std::make_shared<Firebolt>(5, 3), t["range"]);
-                game.addTower(tower);
-                int tx = t["x"];
-                int ty = t["y"];
-                tower->setPosition(tx, ty);
-                game.addTower(tower);
+                tower->setPosition(t["x"], t["y"]);
+                // ЗАЩИТА
+                try {
+                    game.addTower(tower);
+                }
+                catch (...) {
+                    std::cerr << "[WARNING] Skipped overlapping tower.\n";
+                }
             }
+        }
+
+        // === ЛОГИ ===
+        if (gameData.contains("logs")) {
+            std::vector<std::string> loadedLogs = gameData["logs"].get<std::vector<std::string>>();
+            game.setLogs(loadedLogs);
         }
 
         game.setTurnCounter(savedTurn);
